@@ -1,0 +1,53 @@
+http:
+  address: 0.0.0.0:5000
+  # advice address for service discover. eg load balancer, or server external network address
+  # advice_address: 192.168.8.20:5000
+
+# jaeger configuration
+# env configuration is ok, refer: https://www.jaegertracing.io/docs/1.23/client-features
+# config following here will overwrite env configuration
+jaeger:
+  agent_host: 127.0.0.1
+  agent_port: 6831
+
+# redis config
+# optional
+# redis:
+#   - name: redis
+#     addr: 127.0.0.1:6379
+#     password: "123456"
+#     db: 0
+#     prefix: app
+
+# database
+# optional
+# database:
+#   - name: mall_v2
+#     uri: "root:123456@(192.168.4.200:3306)/hello?charset=utf8mb4&parseTime=True&loc=Local"
+#     maxConn: 100
+#     maxIdleConn: 10
+#     connMaxLifetimeInMillisecond: 300000
+
+# kafka config
+# optional
+# mq:
+#   - name: default
+#     version: 1.1.0
+#     broker:
+#       - 127.0.0.1:9092
+
+# log config
+# optional, default print to stdout
+log:
+  # zap log level: info, debug, warn, error
+  level: debug
+  # format: console, json
+  format: console
+  # enable log caller, default true
+  caller: true
+  # stdout print, default true
+  stdout: true
+  file: logs/mall-v2-server.log
+  # enable log file rotate, size in MB
+  maxSize: 1024
+  maxDays: 3

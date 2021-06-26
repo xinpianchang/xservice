@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package buf.v1;
+option go_package = "grpc-service/v1";
+
+import "google/api/httpbody.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
+import "validate/validate.proto";
+
+service CalculatorService {
+  // {{.MethodDescriptorProto.Name}}
+  //
+  // {{import "buf/v1/tables.md"}}
+  rpc AddInt(AddIntRequest) returns (AddIntResponse) {
+    option(google.api.http) = {
+      post: "/rpc/v1/calculator"
+      body: "*"
+    };
+  }
+}
+
+message AddIntRequest {
+  // param a
+  int32 a = 1 [(validate.rules).int32 = {gte:0, lt: 100}];
+  // param b
+  int32 b = 2;
+}
+
+message AddIntResponse {
+  int32 result = 1;
+}

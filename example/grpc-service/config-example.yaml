@@ -1,0 +1,10 @@
+http:
+  address: 0.0.0.0:5001
+
+jaeger:
+  agent_host: "192.168.4.66"
+  agent_port: 6831
+
+log:
+  level: debug
+  format: console

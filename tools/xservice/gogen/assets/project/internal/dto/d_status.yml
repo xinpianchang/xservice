@@ -1,0 +1,8 @@
+# status/error code mapping for RESTful API
+# code: message (format)
+-1: unknown error
+-2: internal error
+400: bad request
+401: unauthenticated
+403: forbidden
+404: not found
