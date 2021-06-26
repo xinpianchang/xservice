@@ -34,6 +34,7 @@ func Build() error {
 
 	_ = os.Mkdir(fmt.Sprintf("%s/logs", dir), 0750)
 	_ = sh.Copy(fmt.Sprintf("%s/README.md", dir), "README.md")
+	_ = sh.Copy(fmt.Sprintf("%s/ctl.sh", dir), "ctl.sh")
 	_ = sh.Run("tar", "-czf", fmt.Sprintf("%s.tar.gz", dir), "-C", "dist", filepath.Base(dir))
 
 	return nil
