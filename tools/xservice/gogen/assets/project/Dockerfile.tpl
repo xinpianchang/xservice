@@ -11,5 +11,5 @@ FROM alpine
 RUN apk update --no-cache && apk add --no-cache ca-certificates tzdata
 ENV TZ Asia/Shanghai
 WORKDIR /app
-COPY --from=builder /build/xservice/{{.Name}}/dist/{{.Name}}-linux-amd64/* /app
+COPY --from=builder /build/xservice/dist/{{.Name}}-linux-amd64/ /app/
 CMD ["./{{.Name}}"]
