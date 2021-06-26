@@ -7,6 +7,7 @@ Another excellent micro service framework
 - RESTFull api (base echo/v4)
 - gRPC & gRPC gateway service & swagger document generation
 - Service discovery (with ETCD/v3)
+- Tracing (jaeger) & Sentry integrated
 - Embed toolset for code generation
 
 ## Quick start
