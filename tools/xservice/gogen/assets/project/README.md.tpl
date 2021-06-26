@@ -9,7 +9,7 @@ install protobuf & generator plugins
 ```bash
 # install specific version (recommended)
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26.0
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@1.1.0
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1.0
 go install github.com/envoyproxy/protoc-gen-validate@v0.6.1
 
 go install \
@@ -31,7 +31,7 @@ go install \
 install buf
 
 ```bash
-go install github.com/bufbuild/buf/cmd/buf/main.go@latest
+go install github.com/bufbuild/buf/cmd/buf@latest
 ```
 
 ## Initialize project
