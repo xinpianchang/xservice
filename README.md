@@ -4,9 +4,11 @@ Another excellent micro service framework
 
 ## Features
 
-- RESTFull API (base echo/v4)
+- RESTful API (base echo/v4)
 - gRPC & gRPC gateway service & Swagger document generation
 - Service discovery (with ETCD/v3)
+- gRPC & gRPC-Gateway & RESTful API all in one tcp port, mux via `cmux`
+- Builtin middlewares & easily to extended
 - Prometheus & Tracing (jaeger) & Sentry integrated
 - Embed toolset for code generation
 
