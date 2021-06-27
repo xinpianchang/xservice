@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/xinpianchang/xservice/pkg/log"
+	"github.com/xinpianchang/xservice/pkg/signalx"
 )
 
 var (
@@ -83,8 +85,8 @@ func Config(v *viper.Viper) {
 			log.Fatal("ping", zap.String("name", c.Name), zap.Error(err))
 		}
 
-		log.Debug(fmt.Sprint("redis ", c.Name, " ping"),
-			zap.String("rsp", r.Val()), zap.String("addr", c.Addr), zap.Int("db", c.DB))
+		// log.Debug(fmt.Sprint("redis ", c.Name, " ping"),
+		// 	zap.String("rsp", r.Val()), zap.String("addr", c.Addr), zap.Int("db", c.DB))
 
 		client.AddHook(&redisTracing{})
 
@@ -96,6 +98,12 @@ func Config(v *viper.Viper) {
 			Locker = redislock.New(client)
 		}
 	}
+
+	signalx.AddShutdownHook(func(os.Signal) {
+		for _, c := range clients {
+			_ = c.Close()
+		}
+	})
 }
 
 func GetClient(name string) *redis.Client {
