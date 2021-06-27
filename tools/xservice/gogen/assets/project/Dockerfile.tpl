@@ -1,4 +1,5 @@
 FROM golang:alpine AS builder
+RUN apk update --no-cache && apk add git
 LABEL stage=gobuilder
 WORKDIR /build/xservice
 COPY . .
