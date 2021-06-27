@@ -24,7 +24,7 @@ service HelloWorldService {
 }
 
 message HelloRequest {
-  // The name who you want to say hello (name should be `1 <= name <= 32`)
+  // The name who you want to say hello (name's length should be `1 <= len(name) <= 32`)
   string name = 1 [(validate.rules).string = {min_len: 1, max_len: 32}];
 }
 
