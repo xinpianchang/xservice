@@ -33,7 +33,7 @@ Open the generated `README.md` file, following the initialize steps, and happing
 ## Resource
 
 - go-zero https://github.com/tal-tech/go-zero (special thanks)
-- micro https://github.com/asim/go-micro
+- micro https://github.com/asim/go-micro (inspired)
 - gRPC generate tool/buf https://buf.build/
 - gRPC validate https://github.com/envoyproxy/protoc-gen-validate
 - RESTful validate https://github.com/go-playground/validator
