@@ -49,8 +49,14 @@ go run cmd/main.go
 
 ## Resource
 
+- xservice https://github.com/xinpianchang/xservice
+- GORM https://gorm.io/docs/ & https://github.com/go-gorm/gorm
+- ECHO https://echo.labstack.com/guide/
+- gRPC https://grpc.io/
+- Protobuf https://developers.google.com/protocol-buffers/docs/gotutorial
 - gRPC generate tool/buf https://buf.build/
 - gRPC validate https://github.com/envoyproxy/protoc-gen-validate
 - RESTful validate https://github.com/go-playground/validator
 - gRPC-Gateway https://grpc-ecosystem.github.io/grpc-gateway/
 - jaeger https://www.jaegertracing.io/
+- Prometheus https://prometheus.io/
