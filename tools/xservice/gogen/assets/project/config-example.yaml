@@ -47,7 +47,7 @@ log:
   caller: true
   # stdout print, default true
   stdout: true
-  file: logs/mall-v2-server.log
+  file: logs/server.log
   # enable log file rotate, size in MB
   maxSize: 1024
   maxDays: 3
