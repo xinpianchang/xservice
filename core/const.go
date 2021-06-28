@@ -16,8 +16,8 @@ const (
 	EnvEtcdPassword   = "XSERVICE_ETCD_PASSWORD"
 
 	// config key
-	ConfigServiceAddr       = "http.address"
-	ConfigServiceAdviceAddr = "http.advice_address"
+	ConfigServiceAddr           = "http.address"
+	ConfigServiceAdvertisedAddr = "http.advertised_address"
 
 	ServiceConfigKeyPrefix   = "xservice/config"
 	ServiceRegisterKeyPrefix = "xservice/register"

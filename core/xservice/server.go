@@ -388,7 +388,7 @@ func (t *serverImpl) doRegisterGrpcServiceEtcd(ctx context.Context) {
 		if sl, ok := leaseMap[desc.ServiceName]; ok {
 			return sl
 		}
-		addr := t.options.Config.GetString(core.ConfigServiceAdviceAddr)
+		addr := t.options.Config.GetString(core.ConfigServiceAdvertisedAddr)
 		sl := &serviceLease{
 			id:    0,
 			lease: clientv3.NewLease(client),

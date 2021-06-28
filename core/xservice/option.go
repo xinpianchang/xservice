@@ -112,7 +112,7 @@ func loadOptions(options ...Option) *Options {
 	}
 
 	if opts.Config.IsSet(core.ConfigServiceAddr) {
-		addviceAddr := opts.Config.GetString(core.ConfigServiceAdviceAddr)
+		addviceAddr := opts.Config.GetString(core.ConfigServiceAdvertisedAddr)
 		if addviceAddr == "" {
 			address := opts.Config.GetString(core.ConfigServiceAddr)
 			_, port, err := net.SplitHostPort(address)
@@ -121,7 +121,7 @@ func loadOptions(options ...Option) *Options {
 			}
 			addviceAddr = net.JoinHostPort(netx.InternalIp(), port)
 
-			opts.Config.SetDefault(core.ConfigServiceAdviceAddr, addviceAddr)
+			opts.Config.SetDefault(core.ConfigServiceAdvertisedAddr, addviceAddr)
 		}
 	}
 

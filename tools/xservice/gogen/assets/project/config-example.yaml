@@ -1,7 +1,7 @@
 http:
   address: 0.0.0.0:5000
-  # advice address for service discover. eg load balancer, or server external network address
-  # advice_address: 192.168.8.20:5000
+  # advertised address for service discover. eg load balancer, or server external network address
+  # advertised_address: 192.168.8.20:5000
 
 # jaeger configuration
 # env configuration is ok, refer: https://www.jaegertracing.io/docs/1.23/client-features
