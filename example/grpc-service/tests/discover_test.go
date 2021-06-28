@@ -18,7 +18,7 @@ func Test_service_discover(t *testing.T) {
 
 	ctx := context.Background()
 
-	conn, err := srv.Client().GrpcClientConn(ctx, "grpc-service", &pb.GreeterService_ServiceDesc)
+	conn, err := srv.Client().GrpcClientConn(ctx, "grpc-service", &pb.CalculatorService_ServiceDesc)
 	require.NoError(t, err)
 	defer conn.Close()
 	require.NotNil(t, conn)
@@ -26,5 +26,5 @@ func Test_service_discover(t *testing.T) {
 	client := pb.NewCalculatorServiceClient(conn)
 	response, err := client.AddInt(ctx, &pb.AddIntRequest{A: 1, B: 2})
 	require.NoError(t, err)
-	require.Equal(t, 3, response.Result)
+	require.Equal(t, int32(3), response.Result)
 }
