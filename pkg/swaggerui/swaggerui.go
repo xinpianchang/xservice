@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"embed"
 	"html/template"
+	"io/fs"
 	"net/http"
 	"path"
 	"strings"
@@ -20,7 +21,7 @@ const (
 	base = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.51.0"
 )
 
-func Serve(prefix string, fs embed.FS) echo.MiddlewareFunc {
+func Serve(prefix string, swaggerFs embed.FS) echo.MiddlewareFunc {
 
 	tp := template.Must(template.New("index").Parse(ui))
 	var index bytes.Buffer
@@ -28,19 +29,22 @@ func Serve(prefix string, fs embed.FS) echo.MiddlewareFunc {
 		"base": base,
 	})
 
-	entries, _ := fs.ReadDir(".")
 	files := make([]map[string]string, 0, 32)
-	for _, it := range entries {
-		name := it.Name()
-		if !it.IsDir() && strings.HasSuffix(name, ".json") {
-			files = append(files, map[string]string{
-				"name": name,
-				"url":  path.Join(prefix, name),
-			})
+	fs.WalkDir(swaggerFs, ".", func(src string, f fs.DirEntry, err error) error {
+		if f.IsDir() {
+			return nil
 		}
-	}
+		if !strings.HasSuffix(src, ".json") {
+			return nil
+		}
+		files = append(files, map[string]string{
+			"name": strings.TrimSuffix(src, ".swagger.json"),
+			"url":  path.Join(prefix, src),
+		})
+		return nil
+	})
 
-	h := http.StripPrefix(prefix, http.FileServer(http.FS(fs)))
+	h := http.StripPrefix(prefix, http.FileServer(http.FS(swaggerFs)))
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
