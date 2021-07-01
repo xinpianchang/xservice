@@ -55,9 +55,11 @@ type GrpcRegisterHandler func(ctx context.Context, mux *gwrt.ServeMux, conn *grp
 
 type serverImpl struct {
 	options      *Options
+	grpcGateway  *gwrt.ServeMux
 	echo         *echo.Echo
 	grpc         *grpc.Server
 	grpcServices []*grpcService
+	httpHandler  http.Handler
 }
 
 func newServer(opts *Options) Server {
@@ -66,8 +68,8 @@ func newServer(opts *Options) Server {
 	}
 	server.options = opts
 
-	server.initGrpc()
 	server.initEcho()
+	server.initGrpc()
 
 	return server
 }
@@ -118,7 +120,7 @@ func (t *serverImpl) Serve() error {
 	}
 
 	server := http.Server{
-		Handler:           t.echo,
+		Handler:           t.httpHandler,
 		ReadHeaderTimeout: time.Second * 30,
 		IdleTimeout:       time.Minute * 1,
 	}
@@ -189,12 +191,63 @@ func (t *serverImpl) waitSignalForTableflip(upg *tableflip.Upgrader) {
 }
 
 func (t *serverImpl) initEcho() {
-	e := echo.New()
+	e := t.newEcho()
+	echox.ConfigValidator(e)
+
+	e.Use(middleware.Trace(t.options.Config.GetBool("jaeger.body_dump"), t.options.EchoTracingSkipper))
+	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+	e.Group("/debug/*", middleware.Pprof())
+
 	t.echo = e
+}
+
+// init grpc
+// add middleware https://github.com/grpc-ecosystem/go-grpc-middleware
+func (t *serverImpl) initGrpc() {
+	options := make([]grpc.ServerOption, 0, 8)
+	options = append(options,
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_recovery.StreamServerInterceptor(),
+			grpc_opentracing.StreamServerInterceptor(),
+			grpc_prometheus.StreamServerInterceptor,
+			grpcx.EnvoyproxyValidatorStreamServerInterceptor(),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_recovery.UnaryServerInterceptor(),
+			grpc_opentracing.UnaryServerInterceptor(),
+			grpc_prometheus.UnaryServerInterceptor,
+			grpcx.EnvoyproxyValidatorUnaryServerInterceptor(),
+		)),
+	)
+	options = append(options, t.options.GrpcOptions...)
+	g := grpc.NewServer(options...)
+	t.grpc = g
+
+	t.grpcGateway = gwrt.NewServeMux(gwrt.WithRoutingErrorHandler(
+		func(ctx context.Context, mux *gwrt.ServeMux, m gwrt.Marshaler, w http.ResponseWriter, r *http.Request, status int) {
+			switch status {
+			case http.StatusNotFound:
+				t.echo.ServeHTTP(w, r)
+			default:
+				gwrt.DefaultRoutingErrorHandler(ctx, mux, m, w, r, status)
+			}
+		},
+	))
+
+	// echo instance for grpc-gateway, which wrap another echo instance, for gRPC service not found fallback serve
+	e := t.newEcho()
+	e.Use(echo.WrapMiddleware(func(handler http.Handler) http.Handler {
+		return t.grpcGateway
+	}))
+
+	t.httpHandler = e
+}
+
+func (t *serverImpl) newEcho() *echo.Echo {
+	e := echo.New()
 
 	e.Logger = log.NewEchoLogger()
 	e.IPExtractor = echo.ExtractIPFromXFFHeader(echo.TrustPrivateNet(true))
-	echox.ConfigValidator(e)
 	e.HTTPErrorHandler = echox.HTTPErrorHandler
 
 	// recover
@@ -211,7 +264,6 @@ func (t *serverImpl) initEcho() {
 	})
 
 	e.Use(echomd.RequestID())
-	e.Use(middleware.Trace(t.options.Config.GetBool("jaeger.body_dump"), t.options.EchoTracingSkipper))
 	e.Use(sentryecho.New(sentryecho.Options{Repanic: true}))
 
 	// logger id & traceId & server-info
@@ -249,31 +301,7 @@ func (t *serverImpl) initEcho() {
 		}
 	})
 
-	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
-	e.Group("/debug/*", middleware.Pprof())
-}
-
-// init grpc
-// add middleware https://github.com/grpc-ecosystem/go-grpc-middleware
-func (t *serverImpl) initGrpc() {
-	options := make([]grpc.ServerOption, 0, 8)
-	options = append(options,
-		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
-			grpc_recovery.StreamServerInterceptor(),
-			grpc_opentracing.StreamServerInterceptor(),
-			grpc_prometheus.StreamServerInterceptor,
-			grpcx.EnvoyproxyValidatorStreamServerInterceptor(),
-		)),
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			grpc_recovery.UnaryServerInterceptor(),
-			grpc_opentracing.UnaryServerInterceptor(),
-			grpc_prometheus.UnaryServerInterceptor,
-			grpcx.EnvoyproxyValidatorUnaryServerInterceptor(),
-		)),
-	)
-	options = append(options, t.options.GrpcOptions...)
-	g := grpc.NewServer(options...)
-	t.grpc = g
+	return e
 }
 
 func (t *serverImpl) serveGrpc(ln net.Listener) {
@@ -302,22 +330,16 @@ func (t *serverImpl) serveGrpc(ln net.Listener) {
 		log.Fatal("grpc gateway client conn", zap.Error(err))
 	}
 
-	grpcGateway := gwrt.NewServeMux()
-
 	for _, service := range t.grpcServices {
 		if service.Handler == nil {
 			continue
 		}
-		err := service.Handler(context.Background(), grpcGateway, grpcClientConn)
+		err := service.Handler(context.Background(), t.grpcGateway, grpcClientConn)
 		if err != nil {
 			log.Fatal("grpc register handler", zap.Error(err))
 		}
 		// log.Debug("register grpc gateway", zap.String("handler", runtime.FuncForPC(reflect.ValueOf(service.Handler).Pointer()).Name()))
 	}
-
-	t.echo.Group("/rpc/*", echo.WrapMiddleware(func(handler http.Handler) http.Handler {
-		return grpcGateway
-	}))
 }
 
 // registerGrpcServiceEtcd
