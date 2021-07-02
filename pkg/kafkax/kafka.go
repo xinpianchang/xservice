@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -21,9 +22,7 @@ import (
 )
 
 var (
-	clients                map[string]*clientWrapper
-	topicCountVec          *prometheus.CounterVec
-	sendDurationsHistogram prometheus.Histogram
+	clients map[string]*clientWrapper
 )
 
 type config struct {
@@ -33,9 +32,11 @@ type config struct {
 }
 
 type clientWrapper struct {
-	client   sarama.Client
-	name     string
-	producer sarama.SyncProducer
+	client    sarama.Client
+	name      string
+	producer  sarama.SyncProducer
+	countVec  *prometheus.CounterVec
+	histogram prometheus.Histogram
 }
 
 func Config(v *viper.Viper) {
@@ -45,21 +46,6 @@ func Config(v *viper.Viper) {
 	}
 
 	serviceName := os.Getenv(core.EnvServiceName)
-
-	topicCountVec = promauto.NewCounterVec(prometheus.CounterOpts{
-		Namespace: serviceName,
-		Subsystem: "kafka",
-		Name:      "send_total",
-		Help:      "Number of kafka message sent",
-	}, []string{"topic"})
-
-	sendDurationsHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace: serviceName,
-		Subsystem: "kafka",
-		Name:      "send_duration_millisecond",
-		Help:      "Send duration",
-		Buckets:   []float64{20, 50, 100, 200, 300, 500, 1000, 2000, 3000, 5000},
-	})
 
 	clients = make(map[string]*clientWrapper, len(configs))
 
@@ -90,10 +76,28 @@ func Config(v *viper.Viper) {
 			log.Fatal("init kafka producer error", zap.Error(err), zap.String("name", c.Name))
 		}
 
+		subsystem := fmt.Sprintf("kafka_%s", strings.ReplaceAll(c.Name, "-", "_"))
+		countVec := promauto.NewCounterVec(prometheus.CounterOpts{
+			Namespace: serviceName,
+			Subsystem: subsystem,
+			Name:      "send_total",
+			Help:      "Number of kafka message sent",
+		}, []string{"topic"})
+
+		histogram := promauto.NewHistogram(prometheus.HistogramOpts{
+			Namespace: serviceName,
+			Subsystem: subsystem,
+			Name:      "send_duration_millisecond",
+			Help:      "Send duration",
+			Buckets:   []float64{20, 50, 100, 200, 300, 500, 1000, 2000, 3000, 5000},
+		})
+
 		clients[c.Name] = &clientWrapper{
-			name:     c.Name,
-			client:   client,
-			producer: producer,
+			name:      c.Name,
+			client:    client,
+			producer:  producer,
+			countVec:  countVec,
+			histogram: histogram,
 		}
 	}
 }
@@ -137,16 +141,23 @@ func SendMessage(ctx context.Context, message *sarama.ProducerMessage, clientNam
 		}()
 	}
 
-	producer := GetProducer(clientName...)
+	producerNotFoundErr := errors.Errorf("producer not found, clientName:%v", clientName)
+
+	cw := getClientWrap(clientName...)
+	if cw == nil {
+		err = producerNotFoundErr
+		return
+	}
+	producer := cw.producer
 	if producer == nil {
-		err = errors.Errorf("producer not found, clientName:%v", clientName)
+		err = producerNotFoundErr
 		return
 	}
 	start := time.Now()
-	topicCountVec.WithLabelValues(message.Topic).Inc()
+	cw.countVec.WithLabelValues(message.Topic).Inc()
 	_, _, err = producer.SendMessage(message)
 	duration := time.Since(start).Milliseconds()
-	sendDurationsHistogram.Observe(float64(duration))
+	cw.histogram.Observe(float64(duration))
 	if err != nil {
 		sentry.CaptureException(errors.WithMessage(err, fmt.Sprint("kafka send message to topic:", message.Topic)))
 	}

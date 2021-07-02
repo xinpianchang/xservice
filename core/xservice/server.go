@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 
@@ -191,10 +192,9 @@ func (t *serverImpl) waitSignalForTableflip(upg *tableflip.Upgrader) {
 }
 
 func (t *serverImpl) initEcho() {
-	e := t.newEcho()
+	e := t.newEcho("http")
 	echox.ConfigValidator(e)
 
-	e.Use(middleware.Trace(t.options.Config.GetBool("jaeger.body_dump"), t.options.EchoTracingSkipper))
 	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	e.Group("/debug/*", middleware.Pprof())
 
@@ -236,7 +236,7 @@ func (t *serverImpl) initGrpc() {
 	))
 
 	// echo instance for grpc-gateway, which wrap another echo instance, for gRPC service not found fallback serve
-	e := t.newEcho()
+	e := t.newEcho("grpc_gateway")
 	e.Use(echo.WrapMiddleware(func(handler http.Handler) http.Handler {
 		return t.grpcGateway
 	}))
@@ -244,7 +244,7 @@ func (t *serverImpl) initGrpc() {
 	t.httpHandler = e
 }
 
-func (t *serverImpl) newEcho() *echo.Echo {
+func (t *serverImpl) newEcho(subsystem string) *echo.Echo {
 	e := echo.New()
 
 	e.Logger = log.NewEchoLogger()
@@ -266,6 +266,8 @@ func (t *serverImpl) newEcho() *echo.Echo {
 
 	e.Use(echomd.RequestID())
 	e.Use(sentryecho.New(sentryecho.Options{Repanic: true}))
+	e.Use(middleware.Trace(t.options.Config.GetBool("jaeger.body_dump"), t.options.EchoTracingSkipper))
+	e.Use(middleware.Prometheus(strings.ReplaceAll(t.options.Name, "-", "_"), subsystem))
 
 	// logger id & traceId & server-info
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
