@@ -219,6 +219,7 @@ func (t *serverImpl) initGrpc() {
 			grpcx.EnvoyproxyValidatorUnaryServerInterceptor(),
 		)),
 	)
+	grpc.EnableTracing = true
 	options = append(options, t.options.GrpcOptions...)
 	g := grpc.NewServer(options...)
 	t.grpc = g
