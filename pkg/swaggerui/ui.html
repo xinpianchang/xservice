@@ -48,7 +48,9 @@
         plugins: [
           SwaggerUIBundle.plugins.DownloadUrl
         ],
-        layout: "StandaloneLayout"
+        layout: "StandaloneLayout",
+        docExpansion: 'list',
+        defaultModelsExpandDepth: 0,
       });
       // End Swagger UI call region
       window.ui = ui;
