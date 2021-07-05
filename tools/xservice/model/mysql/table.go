@@ -189,18 +189,19 @@ func (t *MySQLGenerator) parse(dsn string) error {
 	}
 
 	for _, field := range fields {
-		if v, ok := typeMysqlDic[field.DataType]; ok {
+		if v, ok := typeMysqlDic[field.ColumnType]; ok {
 			field.GoType = v
 		} else {
 			for _, v := range typeMysqlMatch {
-				if ok, _ := regexp.MatchString(v[0], field.DataType); ok {
+				if ok, _ := regexp.MatchString(v[0], field.ColumnType); ok {
 					field.GoType = v[1]
+					break
 				}
 			}
 		}
 
 		if field.GoType == "" {
-			panic(fmt.Sprintf("unknown type: %s", field.DataType))
+			panic(fmt.Sprintf("unknown type: %s", field.ColumnType))
 		}
 
 		field.Statement = t.fieldStatement(field)
