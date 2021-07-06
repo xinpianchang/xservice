@@ -164,7 +164,7 @@ func SendMessage(ctx context.Context, message *sarama.ProducerMessage, clientNam
 	return
 }
 
-func StartGroupConsume(group string, topics []string, handler sarama.ConsumerGroupHandler, name ...string) {
+func StartGroupConsume(ctx context.Context, group string, topics []string, handler sarama.ConsumerGroupHandler, name ...string) {
 	l := log.Named("kafka consumer").With(zap.String("groupID", group), zap.Strings("topics", topics))
 
 	if group == "" || len(topics) == 0 {
@@ -196,8 +196,13 @@ func StartGroupConsume(group string, topics []string, handler sarama.ConsumerGro
 			}
 		}()
 
-		ctx := context.Background()
 		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				// pass
+			}
 			l.Debug("start consume client ...")
 			err = consumer.Consume(ctx, topics, handler)
 			if err != nil {
