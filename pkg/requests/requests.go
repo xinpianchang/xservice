@@ -121,6 +121,11 @@ func (t *requests) Form(form url.Values) *requests {
 	return t
 }
 
+func (t *requests) JSONBody(data interface{}) *requests {
+	b, _ := json.Marshal(data)
+	return t.ContentType(ContentTypeJSON).Data(b)
+}
+
 func (t *requests) Body(body io.Reader) *requests {
 	t.body = body
 	return t
