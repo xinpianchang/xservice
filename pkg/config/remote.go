@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
 
@@ -53,8 +54,13 @@ func (t *remoteConfig) WatchChannel(rp viper.RemoteProvider) (<-chan *viper.Remo
 				return
 			case res := <-ch:
 				for _, event := range res.Events {
-					rr <- &viper.RemoteResponse{
-						Value: event.Kv.Value,
+					switch event.Type {
+					case mvccpb.PUT:
+						rr <- &viper.RemoteResponse{
+							Value: event.Kv.Value,
+						}
+					default:
+						// pass
 					}
 				}
 			}
