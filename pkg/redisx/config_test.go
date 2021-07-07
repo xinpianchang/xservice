@@ -2,13 +2,17 @@ package redisx
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
-func newViper() *viper.Viper {
+func newViper(t *testing.T) *viper.Viper {
+	if os.Getenv("REDIS_TEST") == "" {
+		t.Skip("skip redis test")
+	}
 	v := viper.New()
 	v.SetDefault("redis", map[string]interface{}{
 		"name":     "redis",
@@ -20,14 +24,14 @@ func newViper() *viper.Viper {
 }
 
 func Test_config(t *testing.T) {
-	v := newViper()
+	v := newViper(t)
 	Config(v)
 	assert.NotNil(t, Get("redis"))
 	assert.NotNil(t, Locker)
 }
 
 func Test_wrapper(t *testing.T) {
-	v := newViper()
+	v := newViper(t)
 	Config(v)
 
 	w := Get("redis")
