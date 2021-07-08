@@ -2,9 +2,6 @@
 
 [![License](https://img.shields.io/github/license/xinpianchang/xservice?style=flat-square)](https://raw.githubusercontent.com/xinpianchang/xservice/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xinpianchang/xservice?style=flat-square)](https://goreportcard.com/report/github.com/xinpianchang/xservice)
-
-<!-- [![Codecov](https://img.shields.io/codecov/c/github/xinpianchang/xservice.svg?style=flat-square)](https://codecov.io/gh/xinpianchang/xservice) -->
-
 [![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/xinpianchang/xservice)
 
 Another excellent micro service framework
