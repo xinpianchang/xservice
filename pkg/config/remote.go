@@ -12,6 +12,7 @@ import (
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/xinpianchang/xservice/core"
 	"github.com/xinpianchang/xservice/pkg/log"
@@ -53,6 +54,9 @@ func (t *remoteConfig) WatchChannel(rp viper.RemoteProvider) (<-chan *viper.Remo
 			case <-stop:
 				return
 			case res := <-ch:
+				if err := res.Err(); err != nil {
+					continue
+				}
 				for _, event := range res.Events {
 					switch event.Type {
 					case mvccpb.PUT:
@@ -72,8 +76,10 @@ func (t *remoteConfig) WatchChannel(rp viper.RemoteProvider) (<-chan *viper.Remo
 
 func (t *remoteConfig) client() (*clientv3.Client, error) {
 	cfg := clientv3.Config{
-		Endpoints:   []string{t.Endpoint()},
-		DialTimeout: time.Second * 5,
+		Endpoints:        []string{t.Endpoint()},
+		DialTimeout:      time.Second * 5,
+		AutoSyncInterval: time.Second * 10,
+		Logger:           log.Get().WithOptions(zap.IncreaseLevel(zapcore.ErrorLevel)),
 	}
 	if username := os.Getenv(core.EnvEtcdUser); username != "" {
 		cfg.Username = username
