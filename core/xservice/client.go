@@ -51,6 +51,5 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 		log.Fatal("etcd not configured")
 	}
 	target := fmt.Sprint("etcd:///", serviceKeyPrefix(service, desc))
-	log.For(ctx).Debug("client conn", zap.String("target", target))
 	return grpc.DialContext(ctx, target, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithResolvers(t.resolver))
 }
