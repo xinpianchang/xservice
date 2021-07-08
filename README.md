@@ -5,6 +5,8 @@
 
 <!-- [![Codecov](https://img.shields.io/codecov/c/github/xinpianchang/xservice.svg?style=flat-square)](https://codecov.io/gh/xinpianchang/xservice) -->
 
+[![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/xinpianchang/xservice)
+
 Another excellent micro service framework
 
 ## Features
@@ -15,7 +17,7 @@ Another excellent micro service framework
 - gRPC & gRPC-Gateway & RESTful API all in one tcp port, mux via `cmux`
 - Builtin middlewares & easily to extended
 - Prometheus & Tracing (jaeger) & Sentry integrated
-- Embed toolset for code generation
+- Embed toolset for code generation (e.g. GORM & model CRUD & project layout)
 
 ## Quick start
 
@@ -39,6 +41,7 @@ Open the generated `README.md` file, following the initialize steps, and happing
 
 - go-zero https://github.com/tal-tech/go-zero (special thanks)
 - micro https://github.com/asim/go-micro (inspired)
+- GORM http://gorm.io/
 - gRPC generate tool/buf https://buf.build/
 - gRPC validate https://github.com/envoyproxy/protoc-gen-validate
 - RESTful validate https://github.com/go-playground/validator
