@@ -401,60 +401,45 @@ func (t *serverImpl) doRegisterGrpcServiceEtcd(ctx context.Context) {
 
 	ttl := int64(10) // seconds
 
-	type serviceLease struct {
-		id       clientv3.LeaseID
-		lease    clientv3.Lease
-		key      string
-		endpoint endpoints.Endpoint
-	}
-
-	leaseMap := make(map[string]*serviceLease, len(t.grpcServices))
-	getLease := func(desc *grpc.ServiceDesc) *serviceLease {
-		if sl, ok := leaseMap[desc.ServiceName]; ok {
-			return sl
-		}
-		addr := t.options.Config.GetString(core.ConfigServiceAdvertisedAddr)
-		sl := &serviceLease{
-			id:    0,
-			lease: clientv3.NewLease(client),
-			key:   serviceKey(os.Getenv(core.EnvServiceName), desc),
-			endpoint: endpoints.Endpoint{
-				Addr:     addr,
-				Metadata: desc.Metadata,
-			},
-		}
-		leaseMap[desc.ServiceName] = sl
-		return sl
-	}
-
 	em, _ := endpoints.NewManager(client, core.ServiceRegisterKeyPrefix)
+
+	var (
+		id    clientv3.LeaseID = 0
+		lease clientv3.Lease   = clientv3.NewLease(client)
+
+		addr = t.options.Config.GetString(core.ConfigServiceAdvertisedAddr)
+	)
 
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		default:
-			for _, service := range t.grpcServices {
-				sl := getLease(service.Desc)
-				ll := l.With(zap.String("service", sl.key))
-				// ll.Debug("register")
-				if sl.id == 0 {
-					leaseRsp, err := sl.lease.Grant(context.Background(), ttl)
-					if err != nil {
-						ll.Error("lease.Grant", zap.Error(err))
-						continue
+			if id == 0 {
+				leaseRsp, err := lease.Grant(context.Background(), ttl)
+				if err != nil {
+					l.Error("lease.Grant", zap.Error(err))
+					continue
+				}
+				id = leaseRsp.ID
+
+				for _, service := range t.grpcServices {
+					key := serviceKey(os.Getenv(core.EnvServiceName), service.Desc)
+					endpoint := endpoints.Endpoint{
+						Addr:     addr,
+						Metadata: service.Desc.Metadata,
 					}
 
-					err = em.AddEndpoint(context.Background(), sl.key, sl.endpoint, clientv3.WithLease(leaseRsp.ID))
+					ll := l.With(zap.String("service", key))
+					err = em.AddEndpoint(context.Background(), key, endpoint, clientv3.WithLease(id))
 					if err != nil {
 						ll.Error("kv.Put", zap.Error(err))
 					}
-					sl.id = leaseRsp.ID
-				} else {
-					_, err = sl.lease.KeepAliveOnce(context.Background(), sl.id)
-					if err != nil {
-						sl.id = 0
-					}
+				}
+			} else {
+				_, err = lease.KeepAliveOnce(context.Background(), id)
+				if err != nil {
+					id = 0
 				}
 			}
 		}
