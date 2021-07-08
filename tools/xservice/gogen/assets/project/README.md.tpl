@@ -51,7 +51,8 @@ go run cmd/main.go
 
 - xservice https://github.com/xinpianchang/xservice
 - GORM https://gorm.io/docs/ & https://github.com/go-gorm/gorm
-- ECHO https://echo.labstack.com/guide/
+- Echo https://echo.labstack.com/
+- validator https://github.com/go-playground/validator
 - gRPC https://grpc.io/
 - Protobuf https://developers.google.com/protocol-buffers/docs/gotutorial
 - gRPC generate tool/buf https://buf.build/
