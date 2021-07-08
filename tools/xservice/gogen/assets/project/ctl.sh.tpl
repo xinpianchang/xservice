@@ -18,7 +18,7 @@ getpid() {
 
 status() {
   local pid=$(getpid)
-  if [ ! -z $pid ]; then
+  if [ ! -z "$pid" ]; then
     echo "$appName is runing pid: $pid"
 
     echo ""
@@ -44,11 +44,11 @@ start() {
 stop() {
   echo "stopping $appName"
   local pid=$(getpid)
-  if [ ! -z $pid ]; then
+  if [ ! -z "$pid" ]; then
     kill "$pid"
     sleep 2s
     pid=$(getpid)
-    if [ ! -z $pid ]; then
+    if [ ! -z "$pid" ]; then
       echo "$appName is still runing, try force stop!"
       kill -9 "$pid"
       sleep 2s
@@ -59,7 +59,7 @@ stop() {
 
 reload() {
   local pid=$(getpid)
-  if [ ! -z $pid ]; then
+  if [ ! -z "$pid" ]; then
     kill -USR2 "$pid"
     echo "$appName reloaded"
   else
