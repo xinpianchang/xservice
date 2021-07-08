@@ -1,5 +1,10 @@
 # xservice [WIP]
 
+[![License](https://img.shields.io/github/license/xinpianchang/xservice?style=flat-square)](https://raw.githubusercontent.com/xinpianchang/xservice/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/xinpianchang/xservice?style=flat-square)](https://goreportcard.com/report/github.com/xinpianchang/xservice)
+
+<!-- [![Codecov](https://img.shields.io/codecov/c/github/xinpianchang/xservice.svg?style=flat-square)](https://codecov.io/gh/xinpianchang/xservice) -->
+
 Another excellent micro service framework
 
 ## Features
