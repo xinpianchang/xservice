@@ -26,9 +26,9 @@ func Build() error {
 
 	args := make([]string, 0, 10)
 	args = append(args, "build", "-o", target)
-	args = append(args, "-ldflags="+flags(), "cmd/main.go")
+	args = append(args, "-ldflags", flags(), "cmd/main.go")
 
-	if err := sh.Run(mg.GoCmd(), args...); err != nil {
+	if err := sh.RunWith(map[string]string{"CGO_ENABLED": "0"}, mg.GoCmd(), args...); err != nil {
 		return err
 	}
 
@@ -44,7 +44,7 @@ func flags() string {
 	timestamp := time.Now().Format(time.RFC3339)
 	h := hash()
 	m := "{{.Module}}"
-	tpl := fmt.Sprintf(`-buildid %%s -extldflags "-static" -X "%s/version.Build=%%s" -X "%s/version.BuildAt=%%s"`, m, m)
+	tpl := fmt.Sprintf(`-buildid %%s -s -w -extldflags "-static" -X "%s/version.Build=%%s" -X "%s/version.BuildAt=%%s"`, m, m)
 	return fmt.Sprintf(tpl, h, h, timestamp)
 }
 
