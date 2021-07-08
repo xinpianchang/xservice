@@ -38,8 +38,8 @@ func HTTPErrorHandler(err error, c echo.Context) {
 			_ = responsex.R(c, responsex.New(status, message, nil).SetHttpStatus(status))
 		}
 		return
-	} else if ve, ok := err.(*validator.ValidationErrors); ok {
-		_ = responsex.R(c, responsex.New(http.StatusBadRequest, ve.Error(), nil).SetHttpStatus(http.StatusOK))
+	} else if ve, ok := err.(validator.ValidationErrors); ok {
+		_ = responsex.R(c, responsex.New(http.StatusBadRequest, ve.Error(), nil).SetHttpStatus(http.StatusBadRequest))
 		return
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
 		_ = responsex.R(c, responsex.New(http.StatusNotFound, err.Error(), nil).SetHttpStatus(http.StatusNotFound))
