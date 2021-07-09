@@ -365,11 +365,7 @@ func (t *serverImpl) registerGrpcServiceEtcd() {
 		cancel()
 		// deregister
 		log.Debug("deregister service")
-		client, err := serviceEtcdClient()
-		if err != nil {
-			return
-		}
-
+		client := serviceEtcdClient()
 		em, _ := endpoints.NewManager(client, core.ServiceRegisterKeyPrefix)
 
 		for _, service := range t.grpcServices {
@@ -390,11 +386,7 @@ func (t *serverImpl) doRegisterGrpcServiceEtcd(ctx context.Context) {
 		}
 	}()
 
-	client, err := serviceEtcdClient()
-	if err != nil {
-		l.Error("get client", zap.Error(err))
-		return
-	}
+	client := serviceEtcdClient()
 
 	ticker := time.NewTicker(time.Second * 5)
 	defer ticker.Stop()
@@ -437,7 +429,7 @@ func (t *serverImpl) doRegisterGrpcServiceEtcd(ctx context.Context) {
 					}
 				}
 			} else {
-				_, err = lease.KeepAliveOnce(context.Background(), id)
+				_, err := lease.KeepAliveOnce(context.Background(), id)
 				if err != nil {
 					id = 0
 				}

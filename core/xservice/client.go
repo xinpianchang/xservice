@@ -29,11 +29,8 @@ func newClient(opts *Options) Client {
 	}
 
 	if os.Getenv(core.EnvEtcd) != "" {
-		cli, err := serviceEtcdClient()
-		if err != nil {
-			log.Fatal("etcd client", zap.Error(err))
-		}
-		client.resolver, err = resolver.NewBuilder(cli)
+		var err error
+		client.resolver, err = resolver.NewBuilder(serviceEtcdClient())
 		if err != nil {
 			log.Fatal("endpoints manager", zap.Error(err))
 		}
