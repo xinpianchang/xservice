@@ -17,6 +17,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
+	github.com/jarcoal/httpmock v1.0.8
 	github.com/jinzhu/copier v0.3.2
 	github.com/klauspost/compress v1.13.1 // indirect
 	github.com/labstack/echo-contrib v0.11.0

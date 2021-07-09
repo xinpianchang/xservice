@@ -26,6 +26,7 @@ const (
 )
 
 var (
+	// defaultClient default http client, skip ssl / certificate check & with some optimize connection configuration
 	defaultClient = &http.Client{
 		Timeout: time.Second * 5,
 		Transport: &http.Transport{
@@ -37,6 +38,7 @@ var (
 	}
 )
 
+// request hold request context / params / data
 type requests struct {
 	client  *http.Client
 	ctx     context.Context
@@ -49,6 +51,7 @@ type requests struct {
 	retry   RetryStrategy
 }
 
+// Response hold response context & data with debug infomation
 type Response struct {
 	err      error
 	escape   time.Duration
@@ -56,6 +59,7 @@ type Response struct {
 	cnt      int
 }
 
+// New create new requests instance
 func New() *requests {
 	return &requests{
 		client:  defaultClient,
@@ -66,87 +70,106 @@ func New() *requests {
 	}
 }
 
+// WithClient replace default http client
 func (t *requests) WithClient(client *http.Client) *requests {
 	t.client = client
 	return t
 }
 
+// WithContext set context
 func (t *requests) WithContext(ctx context.Context) *requests {
 	t.ctx = ctx
 	return t
 }
 
+// Retry set retry strategy
 func (t *requests) Retry(retry RetryStrategy) *requests {
 	t.retry = retry
 	return t
 }
 
+// Method set http request method
 func (t *requests) Method(method string) *requests {
 	t.method = method
 	return t
 }
 
+// Uri set uri
 func (t *requests) Uri(uri string) *requests {
 	t.uri = uri
 	return t
 }
 
+// Get set get method with uri
 func (t *requests) Get(uri string) *requests {
 	return t.Method(http.MethodGet).Uri(uri)
 }
 
+// Post set post method with uri
 func (t *requests) Post(uri string) *requests {
 	return t.Method(http.MethodPost).Uri(uri)
 }
 
+// Delete set delete method with uri
 func (t *requests) Delete(uri string) *requests {
 	return t.Method(http.MethodDelete).Uri(uri)
 }
 
+// Put set put method with uri
 func (t *requests) Put(uri string) *requests {
 	return t.Method(http.MethodPut).Uri(uri)
 }
 
+// Patch set patch method with uri
 func (t *requests) Patch(uri string) *requests {
 	return t.Method(http.MethodPatch).Uri(uri)
 }
 
+// Query set query params
 func (t *requests) Query(query url.Values) *requests {
 	t.query = query
 	return t
 }
 
+// Form set form params
 func (t *requests) Form(form url.Values) *requests {
 	t.form = form
 	return t
 }
 
+// JSONBody set json data as body and set request content type is JSON
 func (t *requests) JSONBody(data interface{}) *requests {
 	b, _ := json.Marshal(data)
 	return t.ContentType(ContentTypeJSON).Data(b)
 }
 
+// Body set body as io reader from stream request
 func (t *requests) Body(body io.Reader) *requests {
 	t.body = body
 	return t
 }
 
+// Data set body is raw bytes data
 func (t *requests) Data(data []byte) *requests {
 	return t.Body(bytes.NewReader(data))
 }
 
+// ContentType set content type
 func (t *requests) ContentType(contentType string) *requests {
 	return t.AddHeader("Content-Type", contentType)
 }
 
+// UserAgent set ua
 func (t *requests) UserAgent(userAgent string) *requests {
 	return t.AddHeader("User-Agent", userAgent)
 }
 
+// RequestId set request id pass to target (endpoint)
 func (t *requests) RequestId(requestId string) *requests {
 	return t.AddHeader(HeaderXRequestID, requestId)
 }
 
+// AddHeader add request header
 func (t *requests) AddHeader(key, value string) *requests {
 	t.headers[key] = value
 	return t
@@ -198,6 +221,7 @@ func (t *requests) buildRequest() (*http.Request, error) {
 	return req, nil
 }
 
+// Do requests
 func (t *requests) Do() *Response {
 	start := time.Now()
 	r := &Response{}
@@ -265,25 +289,54 @@ func (t *Response) Dump(body bool) map[string]interface{} {
 	return dump
 }
 
+// StatusCode get response status code
 func (t *Response) StatusCode() int {
-	return t.response.StatusCode
+	if t.response != nil {
+		return t.response.StatusCode
+	}
+	return 0
 }
 
+// Close release response
 func (t *Response) Close() {
 	if t.response != nil {
-		_, _ = ioutil.ReadAll(t.response.Body)
+		_, _ = io.Copy(ioutil.Discard, t.response.Body)
 		_ = t.response.Body.Close()
 	}
 }
 
+// RawResponse get raw response (http.Response)
 func (t *Response) RawResponse() *http.Response {
 	return t.response
 }
 
+// Header get header
+func (t *Response) Header() http.Header {
+	if t.response != nil {
+		return t.response.Header
+	}
+	return nil
+}
+
+// JSON Unmarshal response as JSON
 func (t *Response) JSON(obj interface{}) error {
-	b, err := io.ReadAll(t.response.Body)
+	b, err := t.Bytes()
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(b, obj)
+}
+
+// Text get response as plain text
+func (t *Response) Text() (string, error) {
+	b, err := t.Bytes()
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
+// Bytes get response as bytes data
+func (t *Response) Bytes() ([]byte, error) {
+	return io.ReadAll(t.response.Body)
 }
