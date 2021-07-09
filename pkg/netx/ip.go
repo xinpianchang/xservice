@@ -11,7 +11,7 @@ func InternalIp() string {
 	}
 
 	for _, inf := range infs {
-		if isEthDown(inf.Flags) || isLoopback(inf.Flags) {
+		if isEthDown(inf.Flags) || isLoopback(inf.Flags) || isPointToPoint(inf.Flags) {
 			continue
 		}
 
@@ -38,4 +38,8 @@ func isEthDown(f net.Flags) bool {
 
 func isLoopback(f net.Flags) bool {
 	return f&net.FlagLoopback == net.FlagLoopback
+}
+
+func isPointToPoint(f net.Flags) bool {
+	return f&net.FlagPointToPoint == net.FlagLoopback
 }
