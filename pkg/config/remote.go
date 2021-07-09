@@ -76,10 +76,11 @@ func (t *remoteConfig) WatchChannel(rp viper.RemoteProvider) (<-chan *viper.Remo
 
 func (t *remoteConfig) client() (*clientv3.Client, error) {
 	cfg := clientv3.Config{
-		Endpoints:        []string{t.Endpoint()},
-		DialTimeout:      time.Second * 5,
-		AutoSyncInterval: time.Second * 10,
-		Logger:           log.Get().WithOptions(zap.IncreaseLevel(zapcore.ErrorLevel)),
+		Endpoints:         strings.Split(t.Endpoint(), ","),
+		DialTimeout:       time.Second * 5,
+		DialKeepAliveTime: time.Second * 10,
+		AutoSyncInterval:  time.Second * 30,
+		Logger:            log.Get().WithOptions(zap.IncreaseLevel(zapcore.ErrorLevel)),
 	}
 	if username := os.Getenv(core.EnvEtcdUser); username != "" {
 		cfg.Username = username
