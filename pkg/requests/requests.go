@@ -3,7 +3,6 @@ package requests
 import (
 	"bytes"
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,14 +25,13 @@ const (
 )
 
 var (
-	// defaultClient default http client, skip ssl / certificate check & with some optimize connection configuration
+	// defaultClient default http client with some optimize connection configuration
 	defaultClient = &http.Client{
 		Timeout: time.Second * 5,
 		Transport: &http.Transport{
 			MaxIdleConns:        100,
 			MaxIdleConnsPerHost: 100,
 			IdleConnTimeout:     time.Second * 10,
-			TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
 		},
 	}
 )
