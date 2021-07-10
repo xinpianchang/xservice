@@ -4,10 +4,12 @@ import (
 	"fmt"
 )
 
+// StatusCode represents the status code
 type StatusCode int
 
 var statusMap = make(map[StatusCode]string)
 
+// Status transform status to error with message
 func Status(status StatusCode, message ...string) *Error {
 	var m string
 	if message != nil {
@@ -26,6 +28,7 @@ func Status(status StatusCode, message ...string) *Error {
 	return NewError(int(status), m)
 }
 
+// StatusMessage transfrom status with formated message (with arguments)
 func StatusMessage(status StatusCode, args ...interface{}) *Error {
 	var m string
 	if v, ok := statusMap[status]; ok {
@@ -37,6 +40,7 @@ func StatusMessage(status StatusCode, args ...interface{}) *Error {
 	return NewError(int(status), m)
 }
 
+// SetStatusMap set global status map
 func SetStatusMap(m map[StatusCode]string) {
 	statusMap = m
 }

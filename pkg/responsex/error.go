@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Error is a responsex error
 type Error struct {
 	Status     int
 	HttpStatus int
@@ -12,10 +13,12 @@ type Error struct {
 	Internal   error
 }
 
+// NewError create new error instance
 func NewError(status int, message string) *Error {
 	return &Error{Status: status, Message: message}
 }
 
+// Error implements error interface
 func (e *Error) Error() string {
 	var buf bytes.Buffer
 	_, _ = fmt.Fprint(&buf, "status:", e.Status)
@@ -31,11 +34,13 @@ func (e *Error) Error() string {
 	return buf.String()
 }
 
+// SetInternal set internal / cause error
 func (e *Error) SetInternal(internal error) *Error {
 	e.Internal = internal
 	return e
 }
 
+// SetHttpStatus set http status code
 func (e *Error) SetHttpStatus(httpStatus int) *Error {
 	e.HttpStatus = httpStatus
 	return e
