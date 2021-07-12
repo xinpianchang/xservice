@@ -424,7 +424,7 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 	// SaveAll
 	c.Comment("SaveAll update all items in database, if the value doesn't have primary key, will insert it").Line()
 	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("SaveAll").Params(jen.Id("data []*").Id(modelName)).Id("error").Block(
-		jen.Return(jen.Id("t.tx.Create(data).Error")),
+		jen.Return(jen.Id("t.tx.Save(data).Error")),
 	).Line()
 
 	// Update
