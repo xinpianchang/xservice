@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
+	"github.com/xinpianchang/xservice/pkg/signalx"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -153,7 +154,13 @@ func buildZapLogger(cfg Cfg) (*zap.Logger, error) {
 	if cfg.Caller {
 		options = append(options, zap.AddCaller(), zap.AddCallerSkip(2))
 	}
-	return zap.New(core, options...), nil
+	log := zap.New(core, options...)
+	if cfg.File != "" {
+		signalx.AddShutdownHook(func(os.Signal) {
+			log.Sync()
+		})
+	}
+	return log, nil
 }
 
 func scheduleRotate(log *lumberjack.Logger) {
