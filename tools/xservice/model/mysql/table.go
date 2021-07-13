@@ -292,7 +292,7 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 	).Line()
 
 	// new model
-	newModelFn := stringx.CamelCase(fmt.Sprint("New", typeName, "Model"))
+	newModelFn := stringx.CamelCase(fmt.Sprint("New", modelName, "Model"))
 	c.Commentf("%s create new op Model", newModelFn).Line()
 	c.Func().Id(newModelFn).Params(jen.Id("tx *gorm.DB")).Op("*").Id(typeName).Block(
 		jen.Return(jen.Op("&").Id(typeName).Block(jen.Id("tx").Op(":").Id("tx.Model").Call(jen.Op("&").Id(modelName).Block()).Op(","))),
@@ -512,8 +512,8 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 		}
 		fields = append(fields, fmt.Sprintf(`"%s"`, field.ColumnName))
 	}
-	c.Comment("GetModelFields get all field names but primary key field").Line()
-	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("GetModelFields").Params().Id("[]string").Block(
+	c.Comment("GetFieldNames get all field names but exclude primary key field").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("GetFieldNames").Params().Id("[]string").Block(
 		jen.Return(jen.Id("[]string{" + strings.Join(fields, ", ") + "}")),
 	).Line()
 
