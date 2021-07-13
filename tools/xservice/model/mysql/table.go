@@ -505,6 +505,18 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 		jen.Return(jen.Id("t.tx.Unscoped().Delete(&").Id(modelName).Id("{}, conds...).Error")),
 	).Line()
 
+	fields := make([]string, 0, len(table.Fields))
+	for _, field := range table.Fields {
+		if field.isPrimary() {
+			continue
+		}
+		fields = append(fields, fmt.Sprintf(`"%s"`, field.ColumnName))
+	}
+	c.Comment("GetModelFields get all field names but primary key field").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("GetModelFields").Params().Id("[]string").Block(
+		jen.Return(jen.Id("[]string{" + strings.Join(fields, ", ") + "}")),
+	).Line()
+
 	return c
 }
 
@@ -581,7 +593,7 @@ func (t *MySQLGenerator) fieldStatement(field *Field) *jen.Statement {
 	tag := make(map[string]string, 2)
 	{
 		v := fmt.Sprintf(`column:%s;type:%s`, field.ColumnName, field.ColumnType)
-		if strings.ToUpper(field.ColumnKey) == "PRI" {
+		if field.isPrimary() {
 			v += ";primary_key"
 		}
 		if strings.EqualFold(field.Extra, "auto_increment") {
@@ -627,4 +639,8 @@ func (t *MySQLGenerator) removeStatement(c *jen.Statement, count int) {
 
 func (t *MySQLGenerator) oneline(str string) string {
 	return strings.TrimSpace(linebreak.ReplaceAllString(str, " "))
+}
+
+func (t Field) isPrimary() bool {
+	return strings.ToUpper(t.ColumnKey) == "PRI"
 }
