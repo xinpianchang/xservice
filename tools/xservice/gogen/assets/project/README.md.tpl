@@ -7,6 +7,14 @@ Robust service powered by `xservice`
 install protobuf & generator plugins
 
 ```bash
+# install protoc v3.17.3 (recommended)
+# https://github.com/protocolbuffers/protobuf/releases/tag/v3.17.3
+
+# or checkout latest
+# https://github.com/protocolbuffers/protobuf/releases
+```
+
+```bash
 # install specific version (recommended)
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.26.0
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1.0
