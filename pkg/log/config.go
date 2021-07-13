@@ -8,10 +8,11 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/xinpianchang/xservice/pkg/signalx"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+
+	"github.com/xinpianchang/xservice/pkg/signalx"
 )
 
 var (

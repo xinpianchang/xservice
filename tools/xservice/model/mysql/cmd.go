@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"regexp"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -18,11 +20,27 @@ var (
 			filter := viper.GetString("filter")
 			dir := viper.GetString("dir")
 			pkg := viper.GetString("pkg")
+			gormcomment := viper.GetBool("gormcomment")
 
-			err := NewMySQLGenerator(dir, pkg, filter).Gen(datasource)
+			x := regexp.MustCompile(filter)
+
+			config := &Config{
+				Dir:         dir,
+				Pkg:         pkg,
+				Filter:      x,
+				Gormcomment: gormcomment,
+			}
+
+			err := NewMySQLGenerator(config).Gen(datasource)
 			if err != nil {
 				log.Error("generate error", zap.Error(err))
 			}
 		},
 	}
 )
+
+func init() {
+	pf := MySQLCmd.PersistentFlags()
+	pf.Bool("gormcomment", false, "enable gorm comment")
+	viper.BindPFlag("gormcomment", pf.Lookup("gormcomment"))
+}

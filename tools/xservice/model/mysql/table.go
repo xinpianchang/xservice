@@ -14,10 +14,15 @@ import (
 )
 
 type (
+	Config struct {
+		Dir         string
+		Pkg         string
+		Filter      *regexp.Regexp
+		Gormcomment bool
+	}
+
 	MySQLGenerator struct {
-		Dir    string
-		Pkg    string
-		filter *regexp.Regexp
+		Config *Config
 		Tables []*Table
 	}
 
@@ -104,15 +109,9 @@ var (
 	linebreak = regexp.MustCompile(`[\n\r]+`)
 )
 
-func NewMySQLGenerator(dir string, pkg string, filter string) *MySQLGenerator {
-	var x *regexp.Regexp
-	if filter != "" {
-		x = regexp.MustCompile(filter)
-	}
+func NewMySQLGenerator(config *Config) *MySQLGenerator {
 	return &MySQLGenerator{
-		Dir:    dir,
-		Pkg:    pkg,
-		filter: x,
+		Config: config,
 		Tables: make([]*Table, 0, 512),
 	}
 }
@@ -122,7 +121,7 @@ func (t *MySQLGenerator) Gen(dsn string) error {
 		return err
 	}
 
-	c := jen.NewFile(t.Pkg)
+	c := jen.NewFile(t.Config.Pkg)
 	c.HeaderComment("auto generated file DO NOT EDIT")
 	c.Line()
 
@@ -130,7 +129,7 @@ func (t *MySQLGenerator) Gen(dsn string) error {
 		c.Add(table.Statement).Line()
 	}
 
-	file := filepath.Join(t.Dir, "model.gen.go")
+	file := filepath.Join(t.Config.Dir, "model.gen.go")
 	err := c.Save(file)
 	if err == nil {
 		fmt.Println("generage model:", file)
@@ -155,8 +154,8 @@ func (t *MySQLGenerator) parse(dsn string) error {
 		name := item["table_name"].(string)
 		comment := item["table_comment"].(string)
 		table := &Table{Name: name, Comment: comment}
-		if t.filter != nil {
-			if t.filter.MatchString(name) {
+		if t.Config.Filter != nil {
+			if t.Config.Filter.MatchString(name) {
 				t.Tables = append(t.Tables, table)
 				names = append(names, name)
 			}
@@ -592,6 +591,12 @@ func (t *MySQLGenerator) fieldStatement(field *Field) *jen.Statement {
 		if field.ColumnDefault != "" {
 			v += fmt.Sprint(";default:", field.ColumnDefault)
 		}
+		if t.Config.Gormcomment && field.ColumnComment != "" {
+			comment := t.oneline(field.ColumnComment)
+			comment = strings.ReplaceAll(comment, ";", `\\;`)
+			comment = strings.ReplaceAll(comment, ":", `\\:`)
+			v += fmt.Sprint(";comment:", comment)
+		}
 		tag["gorm"] = v
 	}
 
@@ -619,5 +624,5 @@ func (t *MySQLGenerator) removeStatement(c *jen.Statement, count int) {
 }
 
 func (t *MySQLGenerator) oneline(str string) string {
-	return linebreak.ReplaceAllString(str, "")
+	return strings.TrimSpace(linebreak.ReplaceAllString(str, " "))
 }
