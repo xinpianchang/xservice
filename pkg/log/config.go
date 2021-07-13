@@ -23,6 +23,7 @@ var (
 	loggerFileMapMutex sync.Mutex
 )
 
+// Cfg is the log config
 type Cfg struct {
 	Level   string `yaml:"level"`
 	File    string `yaml:"file"`
@@ -44,6 +45,7 @@ func init() {
 	Config(v)
 }
 
+// Config for log configuration
 func Config(v *viper.Viper) {
 	if err := v.UnmarshalKey("log", &cfg); err != nil {
 		Fatal("parse log config", zap.Error(err))
@@ -66,6 +68,7 @@ func Config(v *viper.Viper) {
 	logger = newLogger(zaplogger)
 }
 
+// NewLoggerFile create a new logger with file and use the global log configuration
 func NewLogger(file string) (Logger, error) {
 	c := cfg
 	if c.File == file {

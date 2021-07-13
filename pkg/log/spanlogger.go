@@ -20,11 +20,14 @@ type spanLogger struct {
 	additionalFields []zapcore.Field
 }
 
+// Named name log
+// see zap log named
 func (t spanLogger) Named(name string) Logger {
 	t.logger = t.logger.Named(name)
 	return t
 }
 
+// Debug log message
 func (t spanLogger) Debug(msg string, fields ...zapcore.Field) {
 	if t.logger.Core().Enabled(zap.DebugLevel) {
 		t.logToSpan("debug", msg, append(t.additionalFields, fields...)...)
@@ -32,6 +35,7 @@ func (t spanLogger) Debug(msg string, fields ...zapcore.Field) {
 	t.logger.Debug(msg, append(t.spanFields, fields...)...)
 }
 
+// Info log message
 func (t spanLogger) Info(msg string, fields ...zapcore.Field) {
 	if t.logger.Core().Enabled(zap.InfoLevel) {
 		t.logToSpan("info", msg, append(t.additionalFields, fields...)...)
@@ -39,23 +43,27 @@ func (t spanLogger) Info(msg string, fields ...zapcore.Field) {
 	t.logger.Info(msg, append(t.spanFields, fields...)...)
 }
 
+// Warn log message
 func (t spanLogger) Warn(msg string, fields ...zapcore.Field) {
 	t.logToSpan("warn", msg, append(t.additionalFields, fields...)...)
 	t.logger.Warn(msg, append(t.spanFields, fields...)...)
 }
 
+// Error log message
 func (t spanLogger) Error(msg string, fields ...zapcore.Field) {
 	t.logToSpan("error", msg, fields...)
 	ext.Error.Set(t.span, true)
 	t.logger.Error(msg, append(t.spanFields, fields...)...)
 }
 
+// Fatal log message
 func (t spanLogger) Fatal(msg string, fields ...zapcore.Field) {
 	t.logToSpan("fatal", msg, append(t.additionalFields, fields...)...)
 	ext.Error.Set(t.span, true)
 	t.logger.Fatal(msg, append(t.spanFields, fields...)...)
 }
 
+// With add zap fields
 func (t spanLogger) With(fields ...zapcore.Field) Logger {
 	return spanLogger{
 		logger:           t.logger.With(fields...),
@@ -65,10 +73,12 @@ func (t spanLogger) With(fields ...zapcore.Field) Logger {
 	}
 }
 
+// For log with context.Context, which will log trace_id and span_id if opentracing enabled
 func (t spanLogger) For(context.Context) Logger {
 	return t
 }
 
+// CallerSkip skip caller for adjust caller
 func (t spanLogger) CallerSkip(skip int) Logger {
 	t.logger = t.logger.WithOptions(zap.AddCallerSkip(skip))
 	return t
