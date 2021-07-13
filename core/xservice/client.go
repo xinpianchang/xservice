@@ -14,7 +14,9 @@ import (
 	"github.com/xinpianchang/xservice/pkg/log"
 )
 
+// Client is the client for xservice
 type Client interface {
+	// GrpcClientConn returns a grpc client connection
 	GrpcClientConn(ctx context.Context, service string, desc *grpc.ServiceDesc, endpoint ...string) (*grpc.ClientConn, error)
 }
 
@@ -39,6 +41,7 @@ func newClient(opts *Options) Client {
 	return client
 }
 
+// GrpcClientConn returns a grpc client connection
 func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *grpc.ServiceDesc, endpoint ...string) (*grpc.ClientConn, error) {
 	if len(endpoint) > 0 {
 		return grpc.DialContext(ctx, endpoint[0], grpc.WithInsecure())

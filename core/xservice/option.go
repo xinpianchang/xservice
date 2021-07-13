@@ -19,6 +19,7 @@ import (
 	"github.com/xinpianchang/xservice/pkg/netx"
 )
 
+// Options for xservice core option
 type Options struct {
 	Name               string
 	Version            string
@@ -30,50 +31,62 @@ type Options struct {
 	EchoTracingSkipper middleware.Skipper
 }
 
+// Option for option config
 type Option func(*Options)
 
+// Name set service name
 func Name(name string) Option {
 	return func(o *Options) {
 		o.Name = name
 	}
 }
 
+// Version set service version
 func Version(version string) Option {
 	return func(o *Options) {
 		o.Version = version
 	}
 }
 
+// Build set build version for service
 func Build(build string) Option {
 	return func(o *Options) {
 		o.Build = build
 	}
 }
 
+// Description set description for service
 func Description(description string) Option {
 	return func(o *Options) {
 		o.Description = description
 	}
 }
 
+// Config set custom viper instance for xservice configuration
+//
+// Note: default configuration enabled watch feature, if set custom viper,
+// watch feature should implements by you self
 func Config(config *viper.Viper) Option {
 	return func(o *Options) {
 		o.Config = config
 	}
 }
 
+// WithGrpcOptions add additional grpc server option
 func WithGrpcOptions(options ...grpc.ServerOption) Option {
 	return func(o *Options) {
 		o.GrpcOptions = options
 	}
 }
 
+// WithSentry set sentry option for enable sentry
 func WithSentry(options sentry.ClientOptions) Option {
 	return func(o *Options) {
 		o.SentryOptions = options
 	}
 }
 
+// WithEchoTracingSkipper set tracing skipper
 func WithEchoTracingSkipper(skipper middleware.Skipper) Option {
 	return func(o *Options) {
 		o.EchoTracingSkipper = skipper

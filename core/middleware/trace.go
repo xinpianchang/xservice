@@ -7,6 +7,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 )
 
+// Trace is opentracing middleware
 func Trace(bodyDump bool, skipper middleware.Skipper) echo.MiddlewareFunc {
 	return jaegertracing.TraceWithConfig(jaegertracing.TraceConfig{
 		Tracer:     opentracing.GlobalTracer(),

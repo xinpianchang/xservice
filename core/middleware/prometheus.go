@@ -9,6 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
+// Prometheus is prometheus middleware
 func Prometheus(namespace, subsystem string) echo.MiddlewareFunc {
 	requests := promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: namespace,

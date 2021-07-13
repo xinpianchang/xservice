@@ -15,6 +15,7 @@ import (
 	"github.com/xinpianchang/xservice/pkg/tracingx"
 )
 
+// Service is a service interface, core api for xservice
 type Service interface {
 	Name() string
 	Options() *Options
@@ -29,6 +30,7 @@ type serviceImpl struct {
 	server  Server
 }
 
+// New create new xservice instance
 func New(options ...Option) Service {
 	opts := loadOptions(options...)
 
@@ -40,22 +42,27 @@ func New(options ...Option) Service {
 	return service
 }
 
+// Name get service name
 func (t *serviceImpl) Name() string {
 	return t.options.Name
 }
 
+// Options get service options
 func (t *serviceImpl) Options() *Options {
 	return t.options
 }
 
+// Client get service client
 func (t *serviceImpl) Client() Client {
 	return t.client
 }
 
+// Server get service server
 func (t *serviceImpl) Server() Server {
 	return t.server
 }
 
+// String get service formatted name
 func (t *serviceImpl) String() string {
 	return fmt.Sprint(t.Name(), "/", t.options.Version, " - ", t.options.Description)
 }

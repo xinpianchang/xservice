@@ -40,9 +40,15 @@ import (
 	"github.com/xinpianchang/xservice/pkg/tracingx"
 )
 
+// Server is the interface for xservice server
 type Server interface {
+	// Echo returns the echo instance
 	Echo() *echo.Echo
+
+	// Serve start and listen server
 	Serve() error
+
+	// GrpcRegister registers a gRPC service
 	GrpcRegister(desc *grpc.ServiceDesc, impl interface{}, handler ...GrpcRegisterHandler)
 }
 
@@ -52,6 +58,7 @@ type grpcService struct {
 	Handler GrpcRegisterHandler
 }
 
+// GrpcRegisterHandler is the interface for gRPC service register handler
 type GrpcRegisterHandler func(ctx context.Context, mux *gwrt.ServeMux, conn *grpc.ClientConn) error
 
 type serverImpl struct {
@@ -79,6 +86,7 @@ func (t *serverImpl) Echo() *echo.Echo {
 	return t.echo
 }
 
+// Serve starts and listen server
 func (t *serverImpl) Serve() error {
 	address := t.getHttpAddress()
 
@@ -158,6 +166,7 @@ func (t *serverImpl) Serve() error {
 	return nil
 }
 
+// GrpcRegister registers a gRPC service
 func (t *serverImpl) GrpcRegister(desc *grpc.ServiceDesc, impl interface{}, hs ...GrpcRegisterHandler) {
 	var handler GrpcRegisterHandler
 	if len(hs) > 0 {
