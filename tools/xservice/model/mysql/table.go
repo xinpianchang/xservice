@@ -223,12 +223,13 @@ func (t *MySQLGenerator) parse(dsn string) error {
 }
 
 func (t *MySQLGenerator) tableStatement(table *Table) *jen.Statement {
-	c := jen.Comment(fmt.Sprintf("%s table: %s", stringx.CamelCase(table.Name), table.Name)).Line()
+	typeName := stringx.CamelCase(table.Name)
+	typeName = strings.ReplaceAll(typeName, "-", "")
+
+	c := jen.Comment(fmt.Sprintf("%s table: %s", typeName, table.Name)).Line()
 	if table.Comment != "" {
 		c.Comment(table.Comment).Line()
 	}
-
-	typeName := stringx.CamelCase(table.Name)
 
 	c.Type().Id(typeName).Struct(jen.Do(func(c *jen.Statement) {
 		for _, field := range table.Fields {
@@ -282,7 +283,8 @@ func (t *MySQLGenerator) tableStatement(table *Table) *jen.Statement {
 
 func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 	typeName := stringx.LowerCamelCase(fmt.Sprint("default_", table.Name, "Model"))
-	modelName := stringx.CamelCase(table.Name)
+	typeName = strings.ReplaceAll(typeName, "-", "")
+	modelName := strings.ReplaceAll(stringx.CamelCase(table.Name), "-", "")
 
 	c := jen.Commentf("%s default %sModel implements with basic operation", typeName, stringx.CamelCase(table.Name)).Line()
 	c.Type().Id(typeName).Struct(
@@ -290,7 +292,7 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 	).Line()
 
 	// new model
-	newModelFn := stringx.CamelCase(fmt.Sprint("New_", table.Name, "Model"))
+	newModelFn := stringx.CamelCase(fmt.Sprint("New", typeName, "Model"))
 	c.Commentf("%s create new op Model", newModelFn).Line()
 	c.Func().Id(newModelFn).Params(jen.Id("tx *gorm.DB")).Op("*").Id(typeName).Block(
 		jen.Return(jen.Op("&").Id(typeName).Block(jen.Id("tx").Op(":").Id("tx.Model").Call(jen.Op("&").Id(modelName).Block()).Op(","))),
