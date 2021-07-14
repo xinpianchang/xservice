@@ -8,21 +8,21 @@ import (
 // ConfigValidator enable echo use ext validation framework
 // ref: https://github.com/go-playground/validator
 func ConfigValidator(e *echo.Echo) {
-	v := &echoValidator{validator: validator.New(), binder: e.Binder}
+	v := &EchoValidator{Validator: validator.New(), binder: e.Binder}
 	e.Validator = v
 	e.Binder = v
 }
 
-type echoValidator struct {
-	validator *validator.Validate
+type EchoValidator struct {
+	Validator *validator.Validate
 	binder    echo.Binder
 }
 
-func (t *echoValidator) Validate(i interface{}) error {
-	return t.validator.Struct(i)
+func (t *EchoValidator) Validate(i interface{}) error {
+	return t.Validator.Struct(i)
 }
 
-func (t *echoValidator) Bind(i interface{}, c echo.Context) error {
+func (t *EchoValidator) Bind(i interface{}, c echo.Context) error {
 	err := t.binder.Bind(i, c)
 	if err != nil {
 		return err

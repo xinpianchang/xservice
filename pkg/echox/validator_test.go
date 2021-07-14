@@ -137,7 +137,7 @@ func TestValidator_validate(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		v := &echoValidator{validator: validator.New()}
+		v := &EchoValidator{Validator: validator.New()}
 		if err := v.Validate(tt.obj); (err != nil) != tt.wantErr {
 			t.Errorf("%q. Validator.validate() error = %v, wantErr %v", tt.name, err, tt.wantErr)
 		}
