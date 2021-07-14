@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
 	"github.com/xinpianchang/xservice/core/xservice"
 
 	pb "grpc-service/buf/v1"
@@ -20,7 +19,6 @@ func Test_service_discover(t *testing.T) {
 
 	conn, err := srv.Client().GrpcClientConn(ctx, "grpc-service", &pb.CalculatorService_ServiceDesc)
 	require.NoError(t, err)
-	defer conn.Close()
 	require.NotNil(t, conn)
 
 	client := pb.NewCalculatorServiceClient(conn)

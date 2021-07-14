@@ -124,18 +124,21 @@ func loadOptions(options ...Option) *Options {
 		opts.loadConfig()
 	}
 
-	if opts.Config.IsSet(core.ConfigServiceAddr) {
-		addviceAddr := opts.Config.GetString(core.ConfigServiceAdvertisedAddr)
-		if addviceAddr == "" {
-			address := opts.Config.GetString(core.ConfigServiceAddr)
-			_, port, err := net.SplitHostPort(address)
-			if err != nil {
-				log.Fatal("invalid address", zap.Error(err))
-			}
-			addviceAddr = net.JoinHostPort(netx.InternalIp(), port)
+	// env addvice addr, high priority
+	if envAdvertisedAddr := os.Getenv(core.EnvAdvertisedAddr); envAdvertisedAddr != "" {
+		opts.Config.SetDefault(core.ConfigServiceAdvertisedAddr, envAdvertisedAddr)
+	}
 
-			opts.Config.SetDefault(core.ConfigServiceAdvertisedAddr, addviceAddr)
+	addviceAddr := opts.Config.GetString(core.ConfigServiceAdvertisedAddr)
+	if addviceAddr == "" {
+		address := opts.Config.GetString(core.ConfigServiceAddr)
+		_, port, err := net.SplitHostPort(address)
+		if err != nil {
+			log.Fatal("invalid address", zap.Error(err))
 		}
+		addviceAddr = net.JoinHostPort(netx.InternalIp(), port)
+
+		opts.Config.SetDefault(core.ConfigServiceAdvertisedAddr, addviceAddr)
 	}
 
 	return opts

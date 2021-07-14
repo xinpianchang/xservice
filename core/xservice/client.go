@@ -4,7 +4,12 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
+	"sync"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	resolver "go.etcd.io/etcd/client/v3/naming/resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -12,22 +17,26 @@ import (
 
 	"github.com/xinpianchang/xservice/core"
 	"github.com/xinpianchang/xservice/pkg/log"
+	"github.com/xinpianchang/xservice/pkg/signalx"
 )
 
 // Client is the client for xservice
 type Client interface {
 	// GrpcClientConn returns a grpc client connection
-	GrpcClientConn(ctx context.Context, service string, desc *grpc.ServiceDesc, endpoint ...string) (*grpc.ClientConn, error)
+	GrpcClientConn(ctx context.Context, service string, desc *grpc.ServiceDesc, endpoint ...string) (grpc.ClientConnInterface, error)
 }
 
 type clientImpl struct {
-	options  *Options
-	resolver gresolver.Builder
+	options   *Options
+	resolver  gresolver.Builder
+	conn      map[string]*grpc.ClientConn
+	connMutex sync.RWMutex
 }
 
 func newClient(opts *Options) Client {
 	client := &clientImpl{
 		options: opts,
+		conn:    make(map[string]*grpc.ClientConn, 128),
 	}
 
 	if os.Getenv(core.EnvEtcd) != "" {
@@ -38,18 +47,89 @@ func newClient(opts *Options) Client {
 		}
 	}
 
+	signalx.AddShutdownHook(func(os.Signal) {
+		client.connMutex.Lock()
+		defer client.connMutex.Unlock()
+		for _, c := range client.conn {
+			_ = c.Close()
+		}
+	})
+
 	return client
 }
 
 // GrpcClientConn returns a grpc client connection
-func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *grpc.ServiceDesc, endpoint ...string) (*grpc.ClientConn, error) {
+func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *grpc.ServiceDesc, endpoint ...string) (grpc.ClientConnInterface, error) {
+	key := t.grpcClientKey(service, desc, endpoint...)
+
+	client := t.fastGetGrpcClient(key)
+	if client != nil {
+		return client, nil
+	}
+
+	t.connMutex.Lock()
+	defer t.connMutex.Unlock()
+
+	// double check
+	if c, ok := t.conn[key]; ok {
+		return c, nil
+	}
+
+	options := make([]grpc.DialOption, 0, 4)
+	options = append(options, grpc.WithInsecure(), grpc.WithBlock())
+	options = append(options,
+		grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
+			grpc_opentracing.StreamClientInterceptor(),
+			grpc_prometheus.StreamClientInterceptor,
+		)),
+		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
+			grpc_opentracing.UnaryClientInterceptor(),
+			grpc_prometheus.UnaryClientInterceptor,
+		)),
+	)
+
 	if len(endpoint) > 0 {
-		return grpc.DialContext(ctx, endpoint[0], grpc.WithInsecure())
+		c, err := grpc.DialContext(ctx, endpoint[0], options...)
+		if err != nil {
+			return nil, err
+		}
+
+		t.conn[key] = c
+
+		return c, nil
 	}
 
 	if os.Getenv(core.EnvEtcd) == "" {
 		log.Fatal("etcd not configured")
 	}
+
 	target := fmt.Sprint("etcd:///", serviceKeyPrefix(service, desc))
-	return grpc.DialContext(ctx, target, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithResolvers(t.resolver))
+	options = append(options, grpc.WithResolvers(t.resolver))
+	c, err := grpc.DialContext(ctx, target, options...)
+	if err != nil {
+		return nil, err
+	}
+
+	t.conn[key] = c
+
+	return c, nil
+}
+
+func (t *clientImpl) fastGetGrpcClient(key string) grpc.ClientConnInterface {
+	t.connMutex.RLock()
+	defer t.connMutex.RUnlock()
+	if c, ok := t.conn[key]; ok {
+		return c
+	}
+	return nil
+}
+
+func (t *clientImpl) grpcClientKey(service string, desc *grpc.ServiceDesc, endpoint ...string) string {
+	var sb strings.Builder
+	_, _ = sb.WriteString(service)
+	_, _ = sb.WriteString(desc.ServiceName)
+	if endpoint != nil {
+		_, _ = sb.WriteString(endpoint[0])
+	}
+	return sb.String()
 }
