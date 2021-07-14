@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -90,14 +89,7 @@ func (t *serverImpl) Echo() *echo.Echo {
 func (t *serverImpl) Serve() error {
 	address := t.getHttpAddress()
 
-	log.Info("server start",
-		zap.String("name", t.options.Name),
-		zap.Int("pid", os.Getpid()),
-		zap.String("version", t.options.Version),
-		zap.String("build", t.options.Build),
-		zap.String("address", address),
-		zap.String("runtime", runtime.Version()),
-	)
+	log.Debug("serve", zap.String("address", address))
 
 	upg, err := tableflip.New(tableflip.Options{
 		UpgradeTimeout: time.Minute,

@@ -2,6 +2,8 @@ package xservice
 
 import (
 	"fmt"
+	"os"
+	"runtime"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/google/gops/agent"
@@ -38,6 +40,14 @@ func New(options ...Option) Service {
 	service.options = opts
 
 	service.init()
+
+	log.Debug("xservice",
+		zap.String("name", opts.Name),
+		zap.Int("pid", os.Getpid()),
+		zap.String("version", opts.Version),
+		zap.String("build", opts.Build),
+		zap.String("runtime", runtime.Version()),
+	)
 
 	return service
 }

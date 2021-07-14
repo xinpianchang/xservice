@@ -70,5 +70,8 @@ func Add(name string, spec string, fn func()) {
 		log.Error("cron add", zap.Error(err))
 	}
 
+	entry := getEntry()
+	log.Debug("cron add", zap.String("name", name), zap.String("spec", spec), zap.Time("next", entry.Schedule.Next(time.Now())))
+
 	start()
 }
