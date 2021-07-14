@@ -1,6 +1,8 @@
 package echox
 
 import (
+	"reflect"
+
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
@@ -27,5 +29,19 @@ func (t *EchoValidator) Bind(i interface{}, c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return t.Validate(i)
+	tt := reflect.TypeOf(i)
+	for {
+		if tt.Kind() == reflect.Ptr {
+			tt = tt.Elem()
+			continue
+		}
+
+		break
+	}
+
+	if tt.Kind() == reflect.Struct {
+		return t.Validate(i)
+	}
+
+	return nil
 }
