@@ -2,6 +2,7 @@ package common
 
 import "reflect"
 
+// IsEmptyValue check value is empty
 func IsEmptyValue(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
