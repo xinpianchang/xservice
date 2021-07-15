@@ -146,6 +146,7 @@ func (t *serverImpl) Serve() error {
 	t.registerGrpcServiceEtcd()
 
 	signalx.AddShutdownHook(func(os.Signal) {
+		t.grpc.GracefulStop()
 		_ = server.Shutdown(context.Background())
 		sentry.Flush(time.Second * 2)
 		log.Info("shutdown", zap.Int("pid", os.Getpid()))
@@ -205,6 +206,8 @@ func (t *serverImpl) initEcho() {
 // init grpc
 // add middleware https://github.com/grpc-ecosystem/go-grpc-middleware
 func (t *serverImpl) initGrpc() {
+	grpc.EnableTracing = true
+
 	options := make([]grpc.ServerOption, 0, 8)
 	options = append(options,
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
@@ -220,7 +223,6 @@ func (t *serverImpl) initGrpc() {
 			grpcx.EnvoyproxyValidatorUnaryServerInterceptor(),
 		)),
 	)
-	grpc.EnableTracing = true
 	options = append(options, t.options.GrpcServerOptions...)
 	g := grpc.NewServer(options...)
 	t.grpc = g
