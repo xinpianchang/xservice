@@ -17,11 +17,11 @@ import (
 )
 
 const (
-	ContentTypeJSON = "application/json; charset=utf-8"
-	ContentTypeForm = "application/x-www-form-urlencoded; charset=utf-8"
-	ContentTypeText = "text/plain; charset=utf-8"
+	ContentTypeJSON = "application/json; charset=utf-8"                  // content type json
+	ContentTypeForm = "application/x-www-form-urlencoded; charset=utf-8" // context type form
+	ContentTypeText = "text/plain; charset=utf-8"                        // content type text
 
-	HeaderXRequestID = "X-Request-ID"
+	HeaderXRequestID = "X-Request-ID" // header field for request id
 )
 
 var (
@@ -259,10 +259,12 @@ func (t *requests) Do() *Response {
 	}
 }
 
+// Err get error
 func (t *Response) Err() error {
 	return t.err
 }
 
+// Dump dump request & response
 func (t *Response) Dump(body bool) map[string]interface{} {
 	dump := make(map[string]interface{})
 	dump["escape"] = t.escape.Milliseconds()
