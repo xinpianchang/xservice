@@ -96,6 +96,10 @@ func (t defaultLogger) With(fields ...zapcore.Field) Logger {
 
 // For log with context.Context, which will log trace_id and span_id if opentracing enabled
 func (t defaultLogger) For(ctx context.Context) Logger {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	if span := opentracing.SpanFromContext(ctx); span != nil {
 		l := spanLogger{span: span, logger: t.logger.WithOptions(zap.AddCallerSkip(t.skip())), additionalFields: t.additionalFields}
 
