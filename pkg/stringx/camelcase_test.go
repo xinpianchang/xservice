@@ -9,6 +9,7 @@ func TestCamelCase(t *testing.T) {
 		args string
 		want string
 	}{
+		{"", ""},
 		{"name", "Name"},
 		{"name1", "Name1"},
 		{"name_if", "NameIf"},
@@ -28,6 +29,7 @@ func TestLowerCamelCase(t *testing.T) {
 		args string
 		want string
 	}{
+		{"", ""},
 		{"name", "name"},
 		{"name1", "name1"},
 		{"name_if", "nameIf"},
