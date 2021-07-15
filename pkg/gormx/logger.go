@@ -34,7 +34,7 @@ func (t *dbLogger) Error(ctx context.Context, msg string, data ...interface{}) {
 }
 
 func (t *dbLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
-	l := t.logger.For(ctx).CallerSkip(2)
+	l := t.logger.For(ctx).CallerSkip(4)
 	sql, rows := fc()
 	l = l.With(zap.Duration("elapsed", time.Since(begin)), zap.Int64("rows", rows))
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
