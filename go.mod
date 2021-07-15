@@ -21,7 +21,7 @@ require (
 	github.com/jinzhu/copier v0.3.2
 	github.com/klauspost/compress v1.13.1 // indirect
 	github.com/labstack/echo-contrib v0.11.0
-	github.com/labstack/echo/v4 v4.3.0
+	github.com/labstack/echo/v4 v4.4.0
 	github.com/labstack/gommon v0.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
@@ -44,13 +44,14 @@ require (
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.18.1
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
-	google.golang.org/genproto v0.0.0-20210707164411-8c882eb9abba // indirect
+	google.golang.org/genproto v0.0.0-20210714021259-044028024a4f // indirect
 	google.golang.org/grpc v1.39.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/datatypes v1.0.1
 	gorm.io/driver/mysql v1.1.1
-	gorm.io/gorm v1.21.11
+	gorm.io/gorm v1.21.12
 	gorm.io/plugin/opentracing v0.0.0-20210706093620-707e98269c0e
 )
