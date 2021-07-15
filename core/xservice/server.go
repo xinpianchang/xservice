@@ -221,7 +221,7 @@ func (t *serverImpl) initGrpc() {
 		)),
 	)
 	grpc.EnableTracing = true
-	options = append(options, t.options.GrpcOptions...)
+	options = append(options, t.options.GrpcServerOptions...)
 	g := grpc.NewServer(options...)
 	t.grpc = g
 

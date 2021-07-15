@@ -75,7 +75,7 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 		return c, nil
 	}
 
-	options := make([]grpc.DialOption, 0, 4)
+	options := make([]grpc.DialOption, 0, 8)
 	options = append(options, grpc.WithInsecure(), grpc.WithBlock())
 	options = append(options,
 		grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
@@ -87,6 +87,7 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 			grpc_prometheus.UnaryClientInterceptor,
 		)),
 	)
+	options = append(options, t.options.GrpcClientDialOptions...)
 
 	if len(endpoint) > 0 {
 		c, err := grpc.DialContext(ctx, endpoint[0], options...)

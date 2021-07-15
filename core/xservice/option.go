@@ -21,14 +21,15 @@ import (
 
 // Options for xservice core option
 type Options struct {
-	Name               string
-	Version            string
-	Build              string
-	Description        string
-	Config             *viper.Viper
-	GrpcOptions        []grpc.ServerOption
-	SentryOptions      sentry.ClientOptions
-	EchoTracingSkipper middleware.Skipper
+	Name                  string
+	Version               string
+	Build                 string
+	Description           string
+	Config                *viper.Viper
+	GrpcServerOptions     []grpc.ServerOption
+	GrpcClientDialOptions []grpc.DialOption
+	SentryOptions         sentry.ClientOptions
+	EchoTracingSkipper    middleware.Skipper
 }
 
 // Option for option config
@@ -72,10 +73,17 @@ func Config(config *viper.Viper) Option {
 	}
 }
 
-// WithGrpcOptions add additional grpc server option
-func WithGrpcOptions(options ...grpc.ServerOption) Option {
+// WithGrpcServerOptions add additional grpc server options
+func WithGrpcServerOptions(options ...grpc.ServerOption) Option {
 	return func(o *Options) {
-		o.GrpcOptions = options
+		o.GrpcServerOptions = options
+	}
+}
+
+// WithGrpcClientDialOptions add additional grpc client dial options
+func WithGrpcClientDialOptions(options ...grpc.DialOption) Option {
+	return func(o *Options) {
+		o.GrpcClientDialOptions = options
 	}
 }
 

@@ -26,6 +26,7 @@ type Service interface {
 	String() string
 }
 
+// serviceImpl is xservice service implementation
 type serviceImpl struct {
 	options *Options
 	client  Client
