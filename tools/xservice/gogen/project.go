@@ -19,6 +19,7 @@ import (
 )
 
 var (
+	// NewCmd is the cobra command for new project
 	NewCmd = &cobra.Command{
 		Use:   "new",
 		Short: "create new project",
@@ -104,6 +105,7 @@ var (
 	}
 )
 
+// Project is project infomation container
 type Project struct {
 	Module string
 	Repo   string
