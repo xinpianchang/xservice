@@ -49,7 +49,7 @@ type requests struct {
 	retry   RetryStrategy
 }
 
-// Response hold response context & data with debug infomation
+// Response hold response context & data with debug information
 type Response struct {
 	err      error
 	escape   time.Duration
