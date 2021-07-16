@@ -76,7 +76,10 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 	}
 
 	options := make([]grpc.DialOption, 0, 8)
-	options = append(options, grpc.WithInsecure(), grpc.WithBlock())
+	options = append(options,
+		grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
+	)
 	options = append(options,
 		grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
 			grpc_opentracing.StreamClientInterceptor(),
