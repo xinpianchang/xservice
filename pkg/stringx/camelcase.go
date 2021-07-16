@@ -1,9 +1,11 @@
 package stringx
 
+// LowerCamelCase to transform string to LowerCamelCase
 func LowerCamelCase(s string) string {
 	return camelCaseInitCase(s, true)
 }
 
+// CamelCase to transform string to CamelCase
 func CamelCase(s string) string {
 	return camelCaseInitCase(s, false)
 }
