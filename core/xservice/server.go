@@ -128,7 +128,7 @@ func (t *serverImpl) Serve() error {
 
 	go func() {
 		if err := server.Serve(httpL); err != nil {
-			if err != http.ErrServerClosed {
+			if err != http.ErrServerClosed && err != cmux.ErrServerClosed {
 				log.Fatal("start http server", zap.Error(err))
 			}
 		}
@@ -146,8 +146,8 @@ func (t *serverImpl) Serve() error {
 	t.registerGrpcServiceEtcd()
 
 	signalx.AddShutdownHook(func(os.Signal) {
-		t.grpc.GracefulStop()
 		_ = server.Shutdown(context.Background())
+		t.grpc.GracefulStop()
 		sentry.Flush(time.Second * 2)
 		log.Info("shutdown", zap.Int("pid", os.Getpid()))
 	})
