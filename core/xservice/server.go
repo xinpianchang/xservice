@@ -29,6 +29,8 @@ import (
 	"go.etcd.io/etcd/client/v3/naming/endpoints"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
 	"github.com/xinpianchang/xservice/core"
 	"github.com/xinpianchang/xservice/core/middleware"
@@ -226,6 +228,10 @@ func (t *serverImpl) initGrpc() {
 	options = append(options, t.options.GrpcServerOptions...)
 	g := grpc.NewServer(options...)
 	t.grpc = g
+
+	healthServer := health.NewServer()
+	healthServer.SetServingStatus(t.options.Name, healthpb.HealthCheckResponse_SERVING)
+	healthpb.RegisterHealthServer(g, healthServer)
 
 	t.grpcGateway = gwrt.NewServeMux(gwrt.WithRoutingErrorHandler(
 		func(ctx context.Context, mux *gwrt.ServeMux, m gwrt.Marshaler, w http.ResponseWriter, r *http.Request, status int) {
