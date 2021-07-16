@@ -28,7 +28,7 @@ func Status(status StatusCode, message ...string) *Error {
 	return NewError(int(status), m)
 }
 
-// StatusMessage transfrom status with formated message (with arguments)
+// StatusMessage transform status with formated message (with arguments)
 func StatusMessage(status StatusCode, args ...interface{}) *Error {
 	var m string
 	if v, ok := statusMap[status]; ok {
