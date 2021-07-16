@@ -21,6 +21,7 @@ const (
 	base = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.51.0"
 )
 
+// Serve create swaggerFS middleware for serve swagger UI
 func Serve(prefix string, swaggerFs embed.FS) echo.MiddlewareFunc {
 
 	tp := template.Must(template.New("index").Parse(ui))
