@@ -78,6 +78,7 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 	options := make([]grpc.DialOption, 0, 8)
 	options = append(options,
 		grpc.WithInsecure(), grpc.WithBlock(),
+		// refer: https://github.com/grpc/grpc-go/blob/master/examples/features/load_balancing/client/main.go#L77
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
 	)
 	options = append(options,
