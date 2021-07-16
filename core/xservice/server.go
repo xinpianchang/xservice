@@ -325,11 +325,14 @@ func (t *serverImpl) serveGrpc(ln net.Listener) {
 		context.Background(),
 		address,
 		grpc.WithInsecure(),
-		grpc.WithUnaryInterceptor(
-			grpc_opentracing.UnaryClientInterceptor(
-				grpc_opentracing.WithTracer(opentracing.GlobalTracer()),
-			),
-		),
+		grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
+			grpc_opentracing.StreamClientInterceptor(),
+			grpc_prometheus.StreamClientInterceptor,
+		)),
+		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
+			grpc_opentracing.UnaryClientInterceptor(),
+			grpc_prometheus.UnaryClientInterceptor,
+		)),
 	)
 
 	if err != nil {
