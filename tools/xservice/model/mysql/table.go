@@ -288,7 +288,7 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 
 	c := jen.Commentf("%s default %sModel implements with basic operation", typeName, stringx.CamelCase(table.Name)).Line()
 	c.Type().Id(typeName).Struct(
-		jen.Id("tx").Op("*").Id("gorm.DB"),
+		jen.Id("tx").Op("*").Qual("gorm.io/gorm", "DB"),
 	).Line()
 
 	// new model
