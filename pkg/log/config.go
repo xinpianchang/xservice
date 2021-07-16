@@ -69,7 +69,7 @@ func Config(v *viper.Viper) {
 	logger = newLogger(zaplogger)
 }
 
-// NewLoggerFile create a new logger with file and use the global log configuration
+// NewLogger create a new logger with file and use the global log configuration
 func NewLogger(file string) (Logger, error) {
 	c := cfg
 	if c.File == file {
