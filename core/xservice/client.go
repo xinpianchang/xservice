@@ -89,6 +89,9 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 	)
 	options = append(options, t.options.GrpcClientDialOptions...)
 
+	ctx, cancel := context.WithTimeout(ctx, t.options.GrpcClientDialTimeout)
+	defer cancel()
+
 	if len(endpoint) > 0 {
 		c, err := grpc.DialContext(ctx, endpoint[0], options...)
 		if err != nil {

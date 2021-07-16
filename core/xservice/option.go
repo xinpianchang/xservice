@@ -28,6 +28,7 @@ type Options struct {
 	Config                *viper.Viper
 	GrpcServerOptions     []grpc.ServerOption
 	GrpcClientDialOptions []grpc.DialOption
+	GrpcClientDialTimeout time.Duration
 	SentryOptions         sentry.ClientOptions
 	EchoTracingSkipper    middleware.Skipper
 }
@@ -87,6 +88,14 @@ func WithGrpcClientDialOptions(options ...grpc.DialOption) Option {
 	}
 }
 
+// WithGrpcClientDialTimeout set client dial timeout
+// default 2 seconds
+func WithGrpcClientDialTimeout(timeout time.Duration) Option {
+	return func(o *Options) {
+		o.GrpcClientDialTimeout = timeout
+	}
+}
+
 // WithSentry set sentry option for enable sentry
 func WithSentry(options sentry.ClientOptions) Option {
 	return func(o *Options) {
@@ -103,6 +112,10 @@ func WithEchoTracingSkipper(skipper middleware.Skipper) Option {
 
 func loadOptions(options ...Option) *Options {
 	opts := new(Options)
+
+	// defaults
+	opts.GrpcClientDialTimeout = time.Second * 2
+
 	loadEnvOptions(opts)
 
 	for _, option := range options {
