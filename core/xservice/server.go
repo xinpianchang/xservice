@@ -282,28 +282,32 @@ func (t *serverImpl) newEcho(subsystem string) *echo.Echo {
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Response().Header().Set("X-Service", fmt.Sprint(t.options.Name, "/", t.options.Version, "/", t.options.Build))
-			id := c.Request().Header.Get(echo.HeaderXRequestID)
-			if id == "" {
-				id = c.Response().Header().Get(echo.HeaderXRequestID)
-			}
-			c.Set(echo.HeaderXRequestID, id)
-			ctx := context.WithValue(c.Request().Context(), core.ContextHeaderXRequestID, id)
-			c.SetRequest(c.Request().WithContext(ctx))
 
+			requestId := c.Request().Header.Get(echo.HeaderXRequestID)
+			if requestId == "" {
+				requestId = c.Response().Header().Get(echo.HeaderXRequestID)
+			}
+			xff := c.Request().Header.Get("X-Forwarded-For")
 			traceId := tracingx.GetTraceID(c.Request().Context())
+
+			c.Set(echo.HeaderXRequestID, requestId)
+			ctx := context.WithValue(c.Request().Context(), core.ContextHeaderXRequestID, requestId)
+			c.SetRequest(c.Request().WithContext(ctx))
+			c.Request().Header.Set("Grpc-Metadata-X-Request-ID", requestId)
+
 			if traceId != "" {
 				c.Response().Header().Set("X-Trace-Id", traceId)
 			}
 
 			if span := opentracing.SpanFromContext(c.Request().Context()); span != nil {
-				span.SetTag("requestId", id)
+				span.SetTag("requestId", requestId)
 				span.SetTag("ip", c.RealIP())
 			}
 
 			if hub := sentryecho.GetHubFromContext(c); hub != nil {
 				scope := hub.Scope()
 				scope.SetTag("ip", c.RealIP())
-				scope.SetTag("X-Forwarded-For", c.Request().Header.Get("X-Forwarded-For"))
+				scope.SetTag("X-Forwarded-For", xff)
 				if traceId != "" {
 					scope.SetTag("traceId", traceId)
 				}
