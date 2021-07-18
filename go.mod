@@ -41,12 +41,13 @@ require (
 	github.com/uber/jaeger-lib v2.4.1+incompatible
 	go.etcd.io/etcd/api/v3 v3.5.0
 	go.etcd.io/etcd/client/v3 v3.5.0
-	go.uber.org/atomic v1.8.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.18.1
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
-	google.golang.org/genproto v0.0.0-20210714021259-044028024a4f // indirect
+	google.golang.org/genproto v0.0.0-20210716133855-ce7ef5c701ea // indirect
 	google.golang.org/grpc v1.39.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
