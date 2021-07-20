@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"net/http"
-	_ "net/http/pprof"
+	_ "net/http/pprof" // pprof
 
 	"github.com/labstack/echo/v4"
 )
