@@ -80,7 +80,7 @@ func NewLogger(file string) (Logger, error) {
 		c.File = filepath.Join(filepath.Dir(cfg.File), file)
 	}
 
-	l, err := buildZapLogger(cfg)
+	l, err := buildZapLogger(c)
 
 	if err != nil {
 		return nil, err
