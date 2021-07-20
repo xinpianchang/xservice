@@ -105,7 +105,7 @@ var (
 	}
 )
 
-// Project is project infomation container
+// Project is project information container
 type Project struct {
 	Module string
 	Repo   string
