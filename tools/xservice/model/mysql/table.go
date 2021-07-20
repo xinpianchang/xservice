@@ -260,7 +260,7 @@ func (t *MySQLGenerator) tableStatement(table *Table) *jen.Statement {
 		c.Comment("BeforeUpdate use for check field has changed, refer: https://gorm.io/docs/update.html").Line()
 		c.Comment("The Changed method only works with methods Update, Updates,").Line()
 		c.Comment("and it only checks if the updating value from Update / Updates equals the model value, will return true if it is changed and not omitted").Line()
-		c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("BeforeUpdate").Params(jen.Id("tx").Op("*").Id("gorm.DB")).Id("error").Block(
+		c.Func().Params(jen.Id("t").Id(typeName)).Id("BeforeUpdate").Params(jen.Id("tx").Op("*").Id("gorm.DB")).Id("error").Block(
 			jen.If(jen.Id("tx.Statement.Changed").Call()).Block(
 				jen.Do(func(c *jen.Statement) {
 					for _, field := range fields {
