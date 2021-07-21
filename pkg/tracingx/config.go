@@ -39,7 +39,10 @@ func Config(v *viper.Viper) {
 		cfg.Sampler.Param = 1
 	}
 
-	metricsFactory := prometheus.New().Namespace(metrics.NSOptions{Name: "xservice", Tags: map[string]string{"service": serviceName}})
+	metricsFactory := prometheus.New().
+		Namespace(metrics.NSOptions{
+			Name: "tracing",
+		})
 
 	tracer, closer, err := cfg.NewTracer(
 		config.Logger(&jaegerLoggerAdapter{}),
