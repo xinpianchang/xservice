@@ -18,6 +18,8 @@ import (
 	"github.com/xinpianchang/xservice/pkg/signalx"
 )
 
+// Config config tracing
+//  currently only works with jaeger
 func Config(v *viper.Viper) {
 	serviceName := os.Getenv(core.EnvServiceName)
 
