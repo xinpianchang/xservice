@@ -196,7 +196,9 @@ func (t *serverImpl) waitSignalForTableflip(upg *tableflip.Upgrader) {
 }
 
 func (t *serverImpl) initEcho() {
-	e := t.newEcho("http")
+	subsystem := "http"
+	e := t.newEcho(subsystem)
+	e.Use(middleware.Prometheus(strings.ReplaceAll(t.options.Name, "-", "_"), subsystem))
 	echox.ConfigValidator(e)
 
 	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
@@ -276,7 +278,6 @@ func (t *serverImpl) newEcho(subsystem string) *echo.Echo {
 	e.Use(echomd.RequestID())
 	e.Use(sentryecho.New(sentryecho.Options{Repanic: true}))
 	e.Use(middleware.Trace(t.options.Config.GetBool("jaeger.body_dump"), t.options.EchoTracingSkipper))
-	e.Use(middleware.Prometheus(strings.ReplaceAll(t.options.Name, "-", "_"), subsystem))
 
 	// logger id & traceId & server-info
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -325,6 +326,7 @@ func (t *serverImpl) serveGrpc(ln net.Listener) {
 		t.grpc.RegisterService(service.Desc, service.Impl)
 		// log.Debug("register grpc service", zap.String("impl", reflect.TypeOf(service.Impl).String()))
 	}
+	grpc_prometheus.Register(t.grpc)
 
 	go func() {
 		_ = t.grpc.Serve(ln)
@@ -467,8 +469,4 @@ func (t *echoContext) Logger() echo.Logger {
 		return l.For(t.Request().Context())
 	}
 	return logger
-}
-
-func (t *echoContext) Path() string {
-	return t.Request().URL.Path
 }

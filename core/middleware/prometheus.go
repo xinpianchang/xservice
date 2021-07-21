@@ -29,7 +29,7 @@ func Prometheus(namespace, subsystem string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			method := c.Request().Method
-			path := c.Request().URL.Path
+			path := c.Path()
 			start := time.Now()
 			err := next(c)
 			durations.WithLabelValues(method, path).Observe(float64(time.Since(start).Milliseconds()))

@@ -53,7 +53,6 @@ func Config(v *viper.Viper) {
 
 	signalx.AddShutdownHook(func(os.Signal) {
 		_ = closer.Close()
-		log.Info("shutdown tracer")
 	})
 
 	opentracing.SetGlobalTracer(tracer)
