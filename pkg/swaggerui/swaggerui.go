@@ -49,7 +49,7 @@ func Serve(prefix string, swaggerFs embed.FS) echo.MiddlewareFunc {
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			requestPath := strings.TrimPrefix(c.Path(), prefix)
+			requestPath := strings.TrimPrefix(c.Request().URL.Path, prefix)
 			switch requestPath {
 			case "", "index.html":
 				tp.Execute(c.Response().Writer, map[string]interface{}{
