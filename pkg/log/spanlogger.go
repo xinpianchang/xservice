@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"github.com/opentracing/opentracing-go/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -52,14 +51,12 @@ func (t spanLogger) Warn(msg string, fields ...zapcore.Field) {
 // Error log message
 func (t spanLogger) Error(msg string, fields ...zapcore.Field) {
 	t.logToSpan("error", msg, fields...)
-	t.markError()
 	t.logger.Error(msg, append(t.spanFields, fields...)...)
 }
 
 // Fatal log message
 func (t spanLogger) Fatal(msg string, fields ...zapcore.Field) {
 	t.logToSpan("fatal", msg, append(t.additionalFields, fields...)...)
-	t.markError()
 	t.logger.Fatal(msg, append(t.spanFields, fields...)...)
 }
 
@@ -92,16 +89,6 @@ func (t spanLogger) logToSpan(level string, msg string, fields ...zapcore.Field)
 		fs = append(fs, zapFieldToLogField(field))
 	}
 	t.span.LogFields(fs...)
-}
-
-func (t spanLogger) markError() {
-	ek := "__error"
-	if t.span.BaggageItem(ek) != "" {
-		return
-	}
-
-	t.span.SetBaggageItem(ek, "true")
-	ext.Error.Set(t.span, true)
 }
 
 // zapFieldToLogField to opentracing log field
