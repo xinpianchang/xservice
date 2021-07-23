@@ -36,7 +36,7 @@ func Dump(filename ...string) echo.MiddlewareFunc {
 				l = logger.For(c.Request().Context())
 			}
 
-      requestId := c.Response().Header().Get(echo.HeaderXRequestID),
+			requestId := c.Response().Header().Get(echo.HeaderXRequestID)
 
 			req, _ := httputil.DumpRequest(c.Request(), true)
 			start := time.Now()
@@ -54,7 +54,7 @@ func Dump(filename ...string) echo.MiddlewareFunc {
 			err := next(c)
 
 			if err != nil {
-        l.Error(requestId, zap.Error(err))
+				l.Error(requestId, zap.Error(err))
 				return err
 			}
 
