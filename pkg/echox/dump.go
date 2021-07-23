@@ -55,13 +55,14 @@ func Dump(filename ...string) echo.MiddlewareFunc {
 				return err
 			}
 
-			l.For(c.Request().Context()).Debug(
+			l.Debug(
 				c.Response().Header().Get(echo.HeaderXRequestID),
 				zap.Int64("cost", time.Since(start).Milliseconds()),
 				zap.Int("status", c.Response().Status),
 				zap.Any("header", c.Response().Header()),
 				zap.String("rsp", resBody.String()),
 			)
+
 			return nil
 		}
 	}
