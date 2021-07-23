@@ -70,10 +70,9 @@ func (l jaegerLoggerAdapter) Error(msg string) {
 }
 
 func (l jaegerLoggerAdapter) Infof(msg string, args ...interface{}) {
-	log.Info(fmt.Sprintf(msg, args...))
+	// no-op
 }
 
 func (l jaegerLoggerAdapter) Debugf(msg string, args ...interface{}) {
-	// ignore debug
-	// log.Debug(fmt.Sprintf(msg, args...))
+	// no-op
 }
