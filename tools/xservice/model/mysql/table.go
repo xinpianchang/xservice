@@ -488,10 +488,10 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 		jen.Return(jen.Id("&data, err")),
 	).Line()
 
-	c.Comment("FindOne").Line()
+	c.Comment("FindOne, use find to avoid 'record not found' error").Line()
 	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("FindOne").Params(jen.Id("conds ...interface{}")).Op("(*").Id(modelName).Id(",error").Op(")").Block(
 		jen.Id("var data ").Id(modelName),
-		jen.Id("err := t.tx.Take(&data, conds...).Error"),
+		jen.Id("err := t.tx.Limit(1).Find(&data, conds...).Error"),
 		jen.Return(jen.Id("&data, err")),
 	).Line()
 
