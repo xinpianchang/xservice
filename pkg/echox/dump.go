@@ -36,10 +36,12 @@ func Dump(filename ...string) echo.MiddlewareFunc {
 				l = logger.For(c.Request().Context())
 			}
 
+      requestId := c.Response().Header().Get(echo.HeaderXRequestID),
+
 			req, _ := httputil.DumpRequest(c.Request(), true)
 			start := time.Now()
 			l.Debug(
-				c.Response().Header().Get(echo.HeaderXRequestID),
+				requestId,
 				zap.Any("url", c.Request().URL),
 				zap.String("req", string(req)),
 			)
@@ -52,11 +54,12 @@ func Dump(filename ...string) echo.MiddlewareFunc {
 			err := next(c)
 
 			if err != nil {
+        l.Error(requestId, zap.Error(err))
 				return err
 			}
 
 			l.Debug(
-				c.Response().Header().Get(echo.HeaderXRequestID),
+				requestId,
 				zap.Int64("cost", time.Since(start).Milliseconds()),
 				zap.Int("status", c.Response().Status),
 				zap.Any("header", c.Response().Header()),
