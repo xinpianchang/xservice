@@ -493,7 +493,7 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 		jen.Id("var data ").Id(modelName),
 		jen.Id("err := t.tx.First(&data, conds...).Error"),
 		jen.If(jen.Id("err != nil &&").Qual("errors", "Is(err, gorm.ErrRecordNotFound)")).Block(
-			jen.Return(jen.Id("nil, err")),
+			jen.Return(jen.Id("nil, nil")),
 		),
 		jen.Return(jen.Id("&data, err")),
 	).Line()
