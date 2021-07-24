@@ -7,11 +7,11 @@ require (
 	github.com/bsm/redislock v0.7.1
 	github.com/cloudflare/tableflip v1.2.2
 	github.com/dave/jennifer v1.4.1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-redis/redis/v8 v8.11.0
+	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/gops v0.3.19
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
