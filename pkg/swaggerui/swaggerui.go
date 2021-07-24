@@ -10,8 +10,9 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/xinpianchang/xservice/pkg/log"
 	"go.uber.org/zap"
+
+	"github.com/xinpianchang/xservice/pkg/log"
 )
 
 var (
