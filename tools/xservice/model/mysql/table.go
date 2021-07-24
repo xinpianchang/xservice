@@ -491,11 +491,14 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 	c.Comment("FindOne, avoid 'record not found' error").Line()
 	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("FindOne").Params(jen.Id("conds ...interface{}")).Op("(*").Id(modelName).Id(",error").Op(")").Block(
 		jen.Id("var data ").Id(modelName),
-		jen.Id("err := t.tx.First(&data, conds...).Error"),
-		jen.If(jen.Id("err != nil &&").Qual("errors", "Is(err, gorm.ErrRecordNotFound)")).Block(
+		jen.Id("x := t.tx.Limit(1).Find(&data, conds...)"),
+		jen.If(jen.Id("err := x.Error; err != nil")).Block(
+			jen.Return(jen.Id("nil, err")),
+		),
+		jen.If(jen.Id("x.RowsAffected == 0")).Block(
 			jen.Return(jen.Id("nil, nil")),
 		),
-		jen.Return(jen.Id("&data, err")),
+		jen.Return(jen.Id("&data, nil")),
 	).Line()
 
 	c.Comment("Delete").Line()
