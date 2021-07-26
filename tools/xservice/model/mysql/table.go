@@ -528,9 +528,8 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 
 func (t *MySQLGenerator) fieldTypeStatement(field *Field) *jen.Statement {
 	comment := t.oneline(field.ColumnComment)
-	idx := strings.Index(comment, "struct:")
-	if idx >= 0 {
-		idx := strings.Index(comment, "struct:")
+
+	if idx := strings.Index(comment, "struct:"); idx >= 0 {
 		gs := comment[idx+7:]
 		idx = strings.Index(gs, " ")
 		if idx > 0 {
