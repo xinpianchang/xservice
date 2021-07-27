@@ -29,7 +29,7 @@ require (
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0
-	github.com/prometheus/common v0.29.0 // indirect
+	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/soheilhy/cmux v0.1.5
@@ -45,9 +45,9 @@ require (
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.18.1
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
-	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
+	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
-	google.golang.org/genproto v0.0.0-20210722135532-667f2b7c528f // indirect
+	google.golang.org/genproto v0.0.0-20210726200206-e7812ac95cc0 // indirect
 	google.golang.org/grpc v1.39.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
