@@ -318,16 +318,70 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Clauses(conds...)"))),
 	).Line()
 
+	// Unscoped
+	c.Comment("Unscoped").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Unscoped").Params().Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Unscoped()"))),
+	).Line()
+
+	// Preload
+	c.Comment("Preload preload associations with given conditions").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Preload").Params(jen.Id("query string, args ...interface{}")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Preload(query, args...)"))),
+	).Line()
+
+	// Assign
+	c.Comment("Assign").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Assign").Params(jen.Id("attrs ...interface{}")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Assign(attrs...)"))),
+	).Line()
+
+	// Attrs
+	c.Comment("Attrs").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Attrs").Params(jen.Id("attrs ...interface{}")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Attrs(attrs...)"))),
+	).Line()
+
 	// Where
 	c.Comment("Where").Line()
 	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Where").Params(jen.Id("query interface{}, args ...interface{}")).Op("*").Id(typeName).Block(
 		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Where(query, args...)"))),
 	).Line()
 
+	// Not
+	c.Comment("Not").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Not").Params(jen.Id("query interface{}, args ...interface{}")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Not(query, args...)"))),
+	).Line()
+
+	// Or
+	c.Comment("Or").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Or").Params(jen.Id("query interface{}, args ...interface{}")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Or(query, args...)"))),
+	).Line()
+
+	// Joins
+	c.Comment("Joins specify Joins conditions").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Joins").Params(jen.Id("query string, args ...interface{}")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Joins(query, args...)"))),
+	).Line()
+
+	// Group
+	c.Comment("Group specify the group method on the find").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Group").Params(jen.Id("name string")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Group(name)"))),
+	).Line()
+
 	// Order
 	c.Comment("Order").Line()
 	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Order").Params(jen.Id("value interface{}")).Op("*").Id(typeName).Block(
 		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Order(value)"))),
+	).Line()
+
+	// Having
+	c.Comment("Having specify HAVING conditions for GROUP BY").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Having").Params(jen.Id("query interface{}, args ...interface{}")).Op("*").Id(typeName).Block(
+		jen.Return(jen.Id(newModelFn).Call(jen.Id("t.tx.Having(query, args...)"))),
 	).Line()
 
 	// Distinct
