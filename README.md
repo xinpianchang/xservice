@@ -32,7 +32,7 @@ cd hello
 xservice new --module github.com/example/hello
 ```
 
-Open the generated `README.md` file, following the initialize steps, and happing coding. 🎉
+Open the generated `README.md` file, following the initialize steps and happing coding. 🎉
 
 ## Resource
 
