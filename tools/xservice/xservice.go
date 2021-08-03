@@ -12,9 +12,26 @@ import (
 )
 
 var (
+	about = `
+                          _
+                         (_)
+__  _____  ___ _ ____   ___  ___ ___
+\ \/ / __|/ _ \ '__\ \ / / |/ __/ _ \
+ >  <\__ \  __/ |   \ V /| | (_|  __/
+/_/\_\___/\___|_|    \_/ |_|\___\___|
+%37s
+
+Another excellent & extensible micro service framework
+
+xservice toolset more documentation refer
+ https://github.com/xinpianchang/xservice
+
+`
+
 	rootCmd = &cobra.Command{
 		Use:     "xservice",
 		Short:   "xservice toolset",
+		Long:    fmt.Sprintf(about, xservice.Version),
 		Version: xservice.Version,
 	}
 )
