@@ -38,6 +38,41 @@ func TestContains(t *testing.T) {
 	}
 }
 
+func TestContainsIgnoreCase(t *testing.T) {
+	type args struct {
+		list []string
+		str  string
+	}
+	tests := []struct {
+		args args
+		want bool
+	}{
+		{
+			args{[]string{"a", "b"}, "a"},
+			true,
+		},
+		{
+			args{[]string{"A", "a"}, "a"},
+			true,
+		},
+		{
+			args{[]string{"a", "b"}, "c"},
+			false,
+		},
+		{
+			args{[]string{"a", "b"}, "aa"},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(path.Join(tt.args.list...), func(t *testing.T) {
+			if got := ContainsIgnoreCase(tt.args.list, tt.args.str); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestFilter(t *testing.T) {
 	cases := []struct {
 		input   string

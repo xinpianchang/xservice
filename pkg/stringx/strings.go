@@ -1,6 +1,9 @@
 package stringx
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 var (
 	// ErrInvalidStartPosition is an error that indicates the start position is invalid.
@@ -13,6 +16,17 @@ var (
 func Contains(list []string, str string) bool {
 	for _, each := range list {
 		if each == str {
+			return true
+		}
+	}
+
+	return false
+}
+
+// ContainsIgnoreCase checks if str is in list (ignore case).
+func ContainsIgnoreCase(list []string, str string) bool {
+	for _, each := range list {
+		if strings.EqualFold(each, str) {
 			return true
 		}
 	}
