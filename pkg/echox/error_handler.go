@@ -77,7 +77,7 @@ func HTTPErrorHandler(err error, c echo.Context) {
 		zap.Int("status", c.Response().Status),
 		zap.Any("url", c.Request().URL),
 		zap.Any("type", reflect.TypeOf(err)),
-		zap.String("error", err.Error()),
+		zap.Error(err),
 	)
 
 	sentryecho.GetHubFromContext(c).CaptureException(err)
