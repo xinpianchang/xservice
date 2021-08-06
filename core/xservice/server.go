@@ -235,16 +235,17 @@ func (t *serverImpl) initGrpc() {
 	healthServer.SetServingStatus(t.options.Name, healthpb.HealthCheckResponse_SERVING)
 	healthpb.RegisterHealthServer(g, healthServer)
 
-	t.grpcGateway = gwrt.NewServeMux(gwrt.WithRoutingErrorHandler(
-		func(ctx context.Context, mux *gwrt.ServeMux, m gwrt.Marshaler, w http.ResponseWriter, r *http.Request, status int) {
-			switch status {
-			case http.StatusNotFound:
-				t.echo.ServeHTTP(w, r)
-			default:
-				gwrt.DefaultRoutingErrorHandler(ctx, mux, m, w, r, status)
-			}
-		},
-	))
+	t.grpcGateway = gwrt.NewServeMux(
+		gwrt.WithRoutingErrorHandler(
+			func(ctx context.Context, mux *gwrt.ServeMux, m gwrt.Marshaler, w http.ResponseWriter, r *http.Request, status int) {
+				switch status {
+				case http.StatusNotFound:
+					t.echo.ServeHTTP(w, r)
+				default:
+					gwrt.DefaultRoutingErrorHandler(ctx, mux, m, w, r, status)
+				}
+			},
+		))
 
 	// echo instance for grpc-gateway, which wrap another echo instance, for gRPC service not found fallback serve
 	e := t.newEcho("grpc_gateway")
