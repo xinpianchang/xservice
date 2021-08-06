@@ -298,6 +298,12 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 		jen.Return(jen.Op("&").Id(typeName).Block(jen.Id("tx").Op(":").Id("tx.Model").Call(jen.Op("&").Id(modelName).Block()).Op(","))),
 	).Line()
 
+	// GetTx
+	c.Comment("GetTx get model gorm.DB instance").Line()
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("GetTx").Params().Op("*").Id("gorm.DB").Block(
+		jen.Return(jen.Id("t.tx")),
+	).Line()
+
 	// Model
 	c.Comment("Model for update tx model").Line()
 	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Model").Params(jen.Id("value interface{}")).Op("*").Id(typeName).Block(
@@ -472,8 +478,9 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 
 	// Save
 	c.Comment("Save update value in database, if the value doesn't have primary key, will insert it").Line()
-	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Save").Params(jen.Id("data *").Id(modelName)).Id("error").Block(
-		jen.Return(jen.Id("t.tx.Save(data).Error")),
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Save").Params(jen.Id("data *").Id(modelName)).Id("(int64, error)").Block(
+		jen.Id("tx := t.tx.Save(data)"),
+		jen.Return(jen.Id("tx.RowsAffected, tx.Error")),
 	).Line()
 
 	// SaveAll
@@ -484,26 +491,30 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 
 	// Update
 	c.Comment("Update attributes with `struct`, will only update non-zero fields").Line()
-	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Update").Params(jen.Id("data *").Id(modelName)).Id("error").Block(
-		jen.Return(jen.Id("t.tx.Updates(data).Error")),
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("Update").Params(jen.Id("data *").Id(modelName)).Id("(int64, error)").Block(
+		jen.Id("tx := t.tx.Updates(data)"),
+		jen.Return(jen.Id("tx.RowsAffected, tx.Error")),
 	).Line()
 
 	// UpdateForce
 	c.Comment("UpdateForce force update include zero value fields").Line()
-	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("UpdateForce").Params(jen.Id("data *").Id(modelName)).Id("error").Block(
-		jen.Return(jen.Id(`t.tx.Model(data).Select("*").Updates(data).Error`)),
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("UpdateForce").Params(jen.Id("data *").Id(modelName)).Id("(int64, error)").Block(
+		jen.Id(`tx := t.tx.Model(data).Select("*").Updates(data)`),
+		jen.Return(jen.Id("tx.RowsAffected, tx.Error")),
 	).Line()
 
 	// UpdateMap
 	c.Comment("UpdateMap update attributes with `map`").Line()
-	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("UpdateMap").Params(jen.Id("data map[string]interface{}")).Id("error").Block(
-		jen.Return(jen.Id("t.tx.Updates(data).Error")),
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("UpdateMap").Params(jen.Id("data map[string]interface{}")).Id("(int64, error)").Block(
+		jen.Id("tx := t.tx.Updates(data)"),
+		jen.Return(jen.Id("tx.RowsAffected, tx.Error")),
 	).Line()
 
 	// UpdateColumn
 	c.Comment("UpdateColumn update only one column").Line()
-	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("UpdateColumn").Params(jen.Id("column string, value interface{}")).Id("error").Block(
-		jen.Return(jen.Id("t.tx.UpdateColumn(column, value).Error")),
+	c.Func().Params(jen.Id("t").Op("*").Id(typeName)).Id("UpdateColumn").Params(jen.Id("column string, value interface{}")).Id("(int64, error)").Block(
+		jen.Id("tx := t.tx.UpdateColumn(column, value)"),
+		jen.Return(jen.Id("tx.RowsAffected, tx.Error")),
 	).Line()
 
 	// Get
