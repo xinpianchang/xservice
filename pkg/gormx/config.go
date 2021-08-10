@@ -57,7 +57,7 @@ func Config(v *viper.Viper, configureFn ...ConfigureFn) {
 		}
 
 		var db *gorm.DB
-		if len(configureFn) > 0 {
+		if len(configureFn) > 0 && configureFn[0] != nil {
 			db = configureFn[0](c)
 		} else {
 			db = MySQLDbConfig(c)

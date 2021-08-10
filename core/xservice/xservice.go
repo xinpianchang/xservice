@@ -101,7 +101,7 @@ func (t *serviceImpl) init() {
 	}
 
 	if t.options.Config.IsSet("database") {
-		gormx.Config(t.options.Config)
+		gormx.Config(t.options.Config, t.options.DbConfigureFn)
 	}
 
 	if t.options.Config.IsSet("mq") {

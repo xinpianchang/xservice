@@ -16,6 +16,7 @@ import (
 
 	"github.com/xinpianchang/xservice/core"
 	"github.com/xinpianchang/xservice/pkg/config"
+	"github.com/xinpianchang/xservice/pkg/gormx"
 	"github.com/xinpianchang/xservice/pkg/netx"
 )
 
@@ -26,6 +27,7 @@ type Options struct {
 	Build                 string
 	Description           string
 	Config                *viper.Viper
+	DbConfigureFn         gormx.ConfigureFn
 	GrpcServerOptions     []grpc.ServerOption
 	GrpcClientDialOptions []grpc.DialOption
 	GrpcClientDialTimeout time.Duration
@@ -71,6 +73,13 @@ func Description(description string) Option {
 func Config(config *viper.Viper) Option {
 	return func(o *Options) {
 		o.Config = config
+	}
+}
+
+// WithDbConfigureFn set db configure function
+func WithDbConfigureFn(fn gormx.ConfigureFn) Option {
+	return func(o *Options) {
+		o.DbConfigureFn = fn
 	}
 }
 
