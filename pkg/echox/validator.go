@@ -3,7 +3,7 @@ package echox
 import (
 	"reflect"
 
-	"github.com/go-playground/validator"
+	validator "github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
