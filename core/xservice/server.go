@@ -29,8 +29,10 @@ import (
 	"go.etcd.io/etcd/client/v3/naming/endpoints"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/status"
 
 	"github.com/xinpianchang/xservice/core"
 	"github.com/xinpianchang/xservice/core/middleware"
@@ -212,16 +214,21 @@ func (t *serverImpl) initEcho() {
 func (t *serverImpl) initGrpc() {
 	grpc.EnableTracing = true
 
+	recoveryHandler := func(ctx context.Context, p interface{}) error {
+		log.For(ctx).Error("grpc panic", zap.Any("error", p))
+		return status.Errorf(codes.Internal, "%v", p)
+	}
+
 	options := make([]grpc.ServerOption, 0, 8)
 	options = append(options,
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
-			grpc_recovery.StreamServerInterceptor(),
+			grpc_recovery.StreamServerInterceptor(grpc_recovery.WithRecoveryHandlerContext(recoveryHandler)),
 			grpc_opentracing.StreamServerInterceptor(),
 			grpc_prometheus.StreamServerInterceptor,
 			grpcx.EnvoyproxyValidatorStreamServerInterceptor(),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			grpc_recovery.UnaryServerInterceptor(),
+			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandlerContext(recoveryHandler)),
 			grpc_opentracing.UnaryServerInterceptor(),
 			grpc_prometheus.UnaryServerInterceptor,
 			grpcx.EnvoyproxyValidatorUnaryServerInterceptor(),
