@@ -15,7 +15,6 @@ import (
 type spanLogger struct {
 	logger           *zap.Logger
 	span             opentracing.Span
-	spanFields       []zapcore.Field
 	additionalFields []zapcore.Field
 }
 
@@ -28,36 +27,30 @@ func (t spanLogger) Named(name string) Logger {
 
 // Debug log message
 func (t spanLogger) Debug(msg string, fields ...zapcore.Field) {
-	if t.logger.Core().Enabled(zap.DebugLevel) {
-		t.logToSpan("debug", msg, append(t.additionalFields, fields...)...)
-	}
-	t.logger.Debug(msg, append(t.spanFields, fields...)...)
+	t.logger.Debug(msg, fields...)
 }
 
 // Info log message
 func (t spanLogger) Info(msg string, fields ...zapcore.Field) {
-	if t.logger.Core().Enabled(zap.InfoLevel) {
-		t.logToSpan("info", msg, append(t.additionalFields, fields...)...)
-	}
-	t.logger.Info(msg, append(t.spanFields, fields...)...)
+	t.logger.Info(msg, fields...)
 }
 
 // Warn log message
 func (t spanLogger) Warn(msg string, fields ...zapcore.Field) {
 	t.logToSpan("warn", msg, append(t.additionalFields, fields...)...)
-	t.logger.Warn(msg, append(t.spanFields, fields...)...)
+	t.logger.Warn(msg, fields...)
 }
 
 // Error log message
 func (t spanLogger) Error(msg string, fields ...zapcore.Field) {
 	t.logToSpan("error", msg, fields...)
-	t.logger.Error(msg, append(t.spanFields, fields...)...)
+	t.logger.Error(msg, fields...)
 }
 
 // Fatal log message
 func (t spanLogger) Fatal(msg string, fields ...zapcore.Field) {
 	t.logToSpan("fatal", msg, append(t.additionalFields, fields...)...)
-	t.logger.Fatal(msg, append(t.spanFields, fields...)...)
+	t.logger.Fatal(msg, fields...)
 }
 
 // With add zap fields
@@ -65,7 +58,6 @@ func (t spanLogger) With(fields ...zapcore.Field) Logger {
 	return spanLogger{
 		logger:           t.logger.With(fields...),
 		span:             t.span,
-		spanFields:       t.spanFields,
 		additionalFields: append(t.additionalFields, fields...),
 	}
 }

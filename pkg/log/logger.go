@@ -104,10 +104,10 @@ func (t defaultLogger) For(ctx context.Context) Logger {
 		l := spanLogger{span: span, logger: t.logger.WithOptions(zap.AddCallerSkip(t.skip())), additionalFields: t.additionalFields}
 
 		if jaegerCtx, ok := span.Context().(jaeger.SpanContext); ok {
-			l.spanFields = []zapcore.Field{
+			l.logger = l.logger.With(
 				zap.String("trace_id", jaegerCtx.TraceID().String()),
 				zap.String("span_id", jaegerCtx.SpanID().String()),
-			}
+			)
 		}
 
 		return l
