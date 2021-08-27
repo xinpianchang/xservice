@@ -62,6 +62,7 @@ func Config(v *viper.Viper) {
 
 		config.Consumer.Return.Errors = true
 		config.Producer.Return.Successes = true
+		config.Producer.MaxMessageBytes = 1024 * 1024 * 8
 		config.ClientID = clientId
 		var (
 			client   sarama.Client
