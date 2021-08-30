@@ -41,6 +41,9 @@ type Client interface {
 	// Get get kafka client
 	Get() sarama.Client
 
+	// Close close kafka client
+	Close() error
+
 	// SendMessage send message to kafka
 	SendMessage(ctx context.Context, message *sarama.ProducerMessage) error
 
@@ -100,6 +103,14 @@ func New(name string, cfg ...*sarama.Config) (Client, error) {
 // Get get kafka client
 func (t *defaultKafka) Get() sarama.Client {
 	return t.client
+}
+
+// Close close kafka client
+func (t *defaultKafka) Close() error {
+	if !t.client.Closed() {
+		return t.client.Close()
+	}
+	return nil
 }
 
 // SendMessage send message to kafka
