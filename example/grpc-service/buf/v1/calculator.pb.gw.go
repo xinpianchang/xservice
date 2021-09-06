@@ -77,7 +77,7 @@ func RegisterCalculatorServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/buf.v1.CalculatorService/AddInt")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/buf.v1.CalculatorService/AddInt", runtime.WithHTTPPathPattern("/rpc/v1/calculator"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -139,7 +139,7 @@ func RegisterCalculatorServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/buf.v1.CalculatorService/AddInt")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/buf.v1.CalculatorService/AddInt", runtime.WithHTTPPathPattern("/rpc/v1/calculator"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -77,7 +77,7 @@ func RegisterGreeterServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/buf.v1.GreeterService/SayHello")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/buf.v1.GreeterService/SayHello", runtime.WithHTTPPathPattern("/rpc/v1/echo"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -139,7 +139,7 @@ func RegisterGreeterServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/buf.v1.GreeterService/SayHello")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/buf.v1.GreeterService/SayHello", runtime.WithHTTPPathPattern("/rpc/v1/echo"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
