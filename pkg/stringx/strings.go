@@ -1,6 +1,7 @@
 package stringx
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 )
@@ -118,4 +119,17 @@ func TakeOne(valid, or string) string {
 	}
 
 	return or
+}
+
+// MustJsonString returns string from json.Marshal.
+func MustJsonString(obj interface{}) string {
+	if obj == nil {
+		return ""
+	}
+
+	b, err := json.Marshal(obj)
+	if err != nil {
+		return ""
+	}
+	return string(b)
 }

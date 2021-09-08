@@ -297,3 +297,22 @@ func TestTakeOne(t *testing.T) {
 		})
 	}
 }
+
+func TestMustJsonString(t *testing.T) {
+	tests := []struct {
+		name string
+		obj  interface{}
+		want string
+	}{
+		{"empty", "", `""`},
+		{"nil", nil, ``},
+		{"map", map[string]int{"a": 1}, `{"a":1}`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MustJsonString(tt.obj); got != tt.want {
+				t.Errorf("MustJsonString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
