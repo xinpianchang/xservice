@@ -45,7 +45,7 @@ go install github.com/bufbuild/buf/cmd/buf@latest
 ## Initialize project
 
 ```bash
-buf beta mod update && buf generate
+buf mod update && buf generate
 go mod tidy && go mod download
 ```
 
