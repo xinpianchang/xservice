@@ -1,4 +1,4 @@
-# xservice [WIP]
+# xservice
 
 [![License](https://img.shields.io/github/license/xinpianchang/xservice?style=flat-square)](https://raw.githubusercontent.com/xinpianchang/xservice/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xinpianchang/xservice?style=flat-square)](https://goreportcard.com/report/github.com/xinpianchang/xservice)
