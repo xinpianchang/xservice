@@ -30,6 +30,7 @@ func main() {
 	srv := xservice.New(
 		xservice.Name(version.Name),
 		xservice.Version(version.Version),
+		xservice.Build(version.Build),
 		xservice.Description(version.Description),
 	)
 
