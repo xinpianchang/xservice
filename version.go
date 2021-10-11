@@ -1,3 +1,3 @@
 package xservice
 
-const Version = "v1.0.22"
+const Version = "v1.1.0"
