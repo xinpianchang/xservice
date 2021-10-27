@@ -2,6 +2,8 @@ package kafkax
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -13,6 +15,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/xinpianchang/xservice/pkg/log"
+	"github.com/xinpianchang/xservice/pkg/netx"
 )
 
 var (
@@ -82,6 +85,12 @@ func New(name string, cfg ...*sarama.Config) (Client, error) {
 	} else {
 		config.Version = version
 	}
+
+	hostname, _ := os.Hostname()
+	if hostname == "" {
+		hostname = netx.InternalIp()
+	}
+	config.ClientID = fmt.Sprint("sarama", "/", hostname, "/", os.Getpid())
 
 	config.Consumer.Return.Errors = true
 	config.Producer.Return.Successes = true
