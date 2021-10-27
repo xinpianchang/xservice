@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	SpecManual              = "@manual"
+	SpecManual              = "@manual" // specification for manual
 	SpecMonthly             = "@monthly"
 	SpecWeekly              = "@weekly"
 	SpecHourly              = "@hourly"
