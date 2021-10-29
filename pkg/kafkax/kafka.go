@@ -90,7 +90,7 @@ func New(name string, cfg ...*sarama.Config) (Client, error) {
 	if hostname == "" {
 		hostname = netx.InternalIp()
 	}
-	config.ClientID = fmt.Sprint("sarama", "/", hostname, "/", os.Getpid())
+	config.ClientID = fmt.Sprint("sarama", "_", hostname, "_", os.Getpid())
 
 	config.Consumer.Return.Errors = true
 	config.Producer.Return.Successes = true
