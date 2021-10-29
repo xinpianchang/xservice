@@ -1,11 +1,11 @@
 version: v1beta1
 name: buf.build/{{.Repo}}/{{.Name}}
 deps:
-  - buf.build/beta/googleapis
-  - buf.build/beta/protoc-gen-validate
+  - buf.build/googleapis/googleapis
+  - buf.build/envoyproxy/protoc-gen-validate
 build:
   roots:
-    - .
+    - buf
 lint:
   use:
     - DEFAULT
