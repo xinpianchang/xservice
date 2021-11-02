@@ -11,7 +11,7 @@ require (
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/google/gops v0.3.21
+	github.com/google/gops v0.3.22
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0
@@ -38,7 +38,7 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/datatypes v1.0.2
-	gorm.io/driver/mysql v1.1.2
-	gorm.io/gorm v1.22.0
+	gorm.io/driver/mysql v1.1.3
+	gorm.io/gorm v1.22.2
 	gorm.io/plugin/opentracing v0.0.0-20211008090106-7b0d17ed1816
 )
