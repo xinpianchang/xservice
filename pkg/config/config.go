@@ -26,6 +26,8 @@ func load(v *viper.Viper) error {
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
 
+	v.AutomaticEnv()
+
 	executable, _ := os.Executable()
 	v.AddConfigPath(filepath.Dir(executable))
 
