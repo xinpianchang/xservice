@@ -32,6 +32,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
 	"github.com/xinpianchang/xservice/core"
@@ -236,6 +237,7 @@ func (t *serverImpl) initGrpc() {
 	)
 	options = append(options, t.options.GrpcServerOptions...)
 	g := grpc.NewServer(options...)
+	reflection.Register(g)
 	t.grpc = g
 
 	healthServer := health.NewServer()
