@@ -10,7 +10,9 @@ import (
 	"github.com/xinpianchang/xservice/core/xservice"
 	"github.com/xinpianchang/xservice/pkg/swaggerui"
 
-	pb "{{.Module}}/buf/v1"
+	gen "{{.Module}}/pb/gen"
+	v1 "{{.Module}}/pb/gen/v1"
+
 	"{{.Module}}/service"
 	"{{.Module}}/version"
 )
@@ -37,10 +39,10 @@ func main() {
 	server := srv.Server()
 
 	// swagger doc
-	server.Echo().Group("/swagger/*", swaggerui.Serve("/swagger/", pb.SwaggerFS))
+	server.Echo().Group("/swagger/*", swaggerui.Serve("/swagger/", gen.SwaggerFS))
 
 	// register grpc service
-	server.GrpcRegister(&pb.HelloWorldService_ServiceDesc, &service.HelloWorldServiceServerImpl{}, pb.RegisterHelloWorldServiceHandler)
+	server.GrpcRegister(&v1.HelloWorldService_ServiceDesc, &service.HelloWorldServiceServerImpl{}, v1.RegisterHelloWorldServiceHandler)
 
 	// routes config
 	routes(server.Echo())
@@ -53,6 +55,6 @@ func main() {
 // routes for RESTful api
 func routes(e *echo.Echo) {
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello World!")
+		return c.String(http.StatusOK, fmt.Sprint(version.Name, "/", version.Version, "/", version.Build))
 	})
 }

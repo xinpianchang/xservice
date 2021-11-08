@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package buf.v1;
-option go_package = "{{.Module}}/buf/v1";
+option go_package = "{{.Module}}/pb/gen/v1";
 
 import "google/api/httpbody.proto";
 import "google/api/annotations.proto";

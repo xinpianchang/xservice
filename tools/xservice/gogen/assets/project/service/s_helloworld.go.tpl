@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	pb "{{.Module}}/buf/v1"
+	pb "{{.Module}}/pb/gen/v1"
 )
 
 type HelloWorldServiceServerImpl struct{}
