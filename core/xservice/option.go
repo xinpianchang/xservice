@@ -22,17 +22,18 @@ import (
 
 // Options for xservice core option
 type Options struct {
-	Name                  string
-	Version               string
-	Build                 string
-	Description           string
-	Config                *viper.Viper
-	DbConfigureFn         gormx.ConfigureFn
-	GrpcServerOptions     []grpc.ServerOption
-	GrpcClientDialOptions []grpc.DialOption
-	GrpcClientDialTimeout time.Duration
-	SentryOptions         sentry.ClientOptions
-	EchoTracingSkipper    middleware.Skipper
+	Name                       string
+	Version                    string
+	Build                      string
+	Description                string
+	Config                     *viper.Viper
+	DbConfigureFn              gormx.ConfigureFn
+	GrpcServerOptions          []grpc.ServerOption
+	GrpcServerEnableReflection bool
+	GrpcClientDialOptions      []grpc.DialOption
+	GrpcClientDialTimeout      time.Duration
+	SentryOptions              sentry.ClientOptions
+	EchoTracingSkipper         middleware.Skipper
 }
 
 // Option for option config
@@ -87,6 +88,13 @@ func WithDbConfigureFn(fn gormx.ConfigureFn) Option {
 func WithGrpcServerOptions(options ...grpc.ServerOption) Option {
 	return func(o *Options) {
 		o.GrpcServerOptions = options
+	}
+}
+
+// WithGrpcServerEnableReflection enable reflection for grpc server
+func WithGrpcServerEnableReflection(enable bool) Option {
+	return func(o *Options) {
+		o.GrpcServerEnableReflection = enable
 	}
 }
 

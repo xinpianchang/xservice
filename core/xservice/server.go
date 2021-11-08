@@ -237,7 +237,11 @@ func (t *serverImpl) initGrpc() {
 	)
 	options = append(options, t.options.GrpcServerOptions...)
 	g := grpc.NewServer(options...)
-	reflection.Register(g)
+
+	if t.options.GrpcServerEnableReflection {
+		reflection.Register(g)
+	}
+
 	t.grpc = g
 
 	healthServer := health.NewServer()
