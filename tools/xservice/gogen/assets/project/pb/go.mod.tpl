@@ -1,1 +1,1 @@
-module {{.Module}}_pb
+module {{.Module}}/pb
