@@ -21,6 +21,7 @@ func main() {
 		xservice.Name("grpc-service"),
 		xservice.Version("v1.0.0"),
 		xservice.Description("example grpc service with enable grpc gateway"),
+		xservice.WithGrpcServerEnableReflection(true), // optional
 	)
 
 	server := srv.Server()

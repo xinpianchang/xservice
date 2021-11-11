@@ -4,4 +4,4 @@ require (
 	github.com/xinpianchang/xservice latest
 )
 
-replace {{.Module}}/pb => ./pb
+replace {{.Module}}_pb => ./pb

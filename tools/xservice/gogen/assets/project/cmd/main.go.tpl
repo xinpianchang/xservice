@@ -10,8 +10,8 @@ import (
 	"github.com/xinpianchang/xservice/core/xservice"
 	"github.com/xinpianchang/xservice/pkg/swaggerui"
 
-	gen "{{.Module}}/pb/gen"
-	v1 "{{.Module}}/pb/gen/v1"
+	gen "{{.Module}}_pb/gen"
+	v1 "{{.Module}}_pb/gen/v1"
 
 	"{{.Module}}/service"
 	"{{.Module}}/version"
