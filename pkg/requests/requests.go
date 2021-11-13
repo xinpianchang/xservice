@@ -24,6 +24,69 @@ const (
 	HeaderXRequestID = "X-Request-ID" // header field for request id
 )
 
+// Requests request interface
+type Requests interface {
+	// WithClient replace default http client
+	WithClient(client *http.Client) Requests
+
+	// WithContext set context
+	WithContext(ctx context.Context) Requests
+
+	// Retry set retry strategy
+	Retry(retry RetryStrategy) Requests
+
+	// Method set http request method
+	Method(method string) Requests
+
+	// Uri set uri
+	Uri(uri string) Requests
+
+	// Get set get method with uri
+	Get(uri string) Requests
+
+	// Post set post method with uri
+	Post(uri string) Requests
+
+	// Delete set delete method with uri
+	Delete(uri string) Requests
+
+	// Put set put method with uri
+	Put(uri string) Requests
+
+	// Patch set patch method with uri
+	Patch(uri string) Requests
+
+	// Query set query params
+	Query(query url.Values) Requests
+
+	// Form set form params
+	Form(form url.Values) Requests
+
+	// JSONBody set json data as body and set request content type is JSON
+	JSONBody(data interface{}) Requests
+
+	// Body set body as io reader from stream request
+	Body(body io.Reader) Requests
+
+	// Data set body is raw bytes data
+	Data(data []byte) Requests
+
+	// ContentType set content type
+	ContentType(contentType string) Requests
+
+	// UserAgent set ua
+	UserAgent(userAgent string) Requests
+
+	// RequestId set request id pass to target (endpoint)
+	RequestId(requestId string) Requests
+
+	// AddHeader add request header
+	AddHeader(key, value string) Requests
+
+	// Do requests
+	Do() *Response
+}
+
 var (
 	// defaultClient default http client with some optimize connection configuration
 	defaultClient = &http.Client{
@@ -58,7 +121,7 @@ type Response struct {
 }
 
 // New create new requests instance
-func New() *requests {
+func New() Requests {
 	return &requests{
 		client:  defaultClient,
 		ctx:     context.Background(),
@@ -69,106 +132,106 @@ func New() *requests {
 }
 
 // WithClient replace default http client
-func (t *requests) WithClient(client *http.Client) *requests {
+func (t *requests) WithClient(client *http.Client) Requests {
 	t.client = client
 	return t
 }
 
 // WithContext set context
-func (t *requests) WithContext(ctx context.Context) *requests {
+func (t *requests) WithContext(ctx context.Context) Requests {
 	t.ctx = ctx
 	return t
 }
 
 // Retry set retry strategy
-func (t *requests) Retry(retry RetryStrategy) *requests {
+func (t *requests) Retry(retry RetryStrategy) Requests {
 	t.retry = retry
 	return t
 }
 
 // Method set http request method
-func (t *requests) Method(method string) *requests {
+func (t *requests) Method(method string) Requests {
 	t.method = method
 	return t
 }
 
 // Uri set uri
-func (t *requests) Uri(uri string) *requests {
+func (t *requests) Uri(uri string) Requests {
 	t.uri = uri
 	return t
 }
 
 // Get set get method with uri
-func (t *requests) Get(uri string) *requests {
+func (t *requests) Get(uri string) Requests {
 	return t.Method(http.MethodGet).Uri(uri)
 }
 
 // Post set post method with uri
-func (t *requests) Post(uri string) *requests {
+func (t *requests) Post(uri string) Requests {
 	return t.Method(http.MethodPost).Uri(uri)
 }
 
 // Delete set delete method with uri
-func (t *requests) Delete(uri string) *requests {
+func (t *requests) Delete(uri string) Requests {
 	return t.Method(http.MethodDelete).Uri(uri)
 }
 
 // Put set put method with uri
-func (t *requests) Put(uri string) *requests {
+func (t *requests) Put(uri string) Requests {
 	return t.Method(http.MethodPut).Uri(uri)
 }
 
 // Patch set patch method with uri
-func (t *requests) Patch(uri string) *requests {
+func (t *requests) Patch(uri string) Requests {
 	return t.Method(http.MethodPatch).Uri(uri)
 }
 
 // Query set query params
-func (t *requests) Query(query url.Values) *requests {
+func (t *requests) Query(query url.Values) Requests {
 	t.query = query
 	return t
 }
 
 // Form set form params
-func (t *requests) Form(form url.Values) *requests {
+func (t *requests) Form(form url.Values) Requests {
 	t.form = form
 	return t
 }
 
 // JSONBody set json data as body and set request content type is JSON
-func (t *requests) JSONBody(data interface{}) *requests {
+func (t *requests) JSONBody(data interface{}) Requests {
 	b, _ := json.Marshal(data)
 	return t.ContentType(ContentTypeJSON).Data(b)
 }
 
 // Body set body as io reader from stream request
-func (t *requests) Body(body io.Reader) *requests {
+func (t *requests) Body(body io.Reader) Requests {
 	t.body = body
 	return t
 }
 
 // Data set body is raw bytes data
-func (t *requests) Data(data []byte) *requests {
+func (t *requests) Data(data []byte) Requests {
 	return t.Body(bytes.NewReader(data))
 }
 
 // ContentType set content type
-func (t *requests) ContentType(contentType string) *requests {
+func (t *requests) ContentType(contentType string) Requests {
 	return t.AddHeader("Content-Type", contentType)
 }
 
 // UserAgent set ua
-func (t *requests) UserAgent(userAgent string) *requests {
+func (t *requests) UserAgent(userAgent string) Requests {
 	return t.AddHeader("User-Agent", userAgent)
 }
 
 // RequestId set request id pass to target (endpoint)
-func (t *requests) RequestId(requestId string) *requests {
+func (t *requests) RequestId(requestId string) Requests {
 	return t.AddHeader(HeaderXRequestID, requestId)
 }
 
 // AddHeader add request header
-func (t *requests) AddHeader(key, value string) *requests {
+func (t *requests) AddHeader(key, value string) Requests {
 	t.headers[key] = value
 	return t
 }
