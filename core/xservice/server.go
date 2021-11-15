@@ -385,7 +385,7 @@ func (t *serverImpl) registerGrpcServiceEtcd() {
 	}
 
 	if os.Getenv(core.EnvEtcd) == "" {
-		log.Warn("etcd not configured, service register ignored")
+		log.Info("etcd not configured, service register ignored")
 		return
 	}
 
