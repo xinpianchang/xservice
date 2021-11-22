@@ -9,6 +9,17 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
 import "validate/validate.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+
+// clang-format off
+option(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "hello world service";
+    version: "v1.0.0";
+  };
+};
+// clang-format on
 
 // HelloWorldService
 service HelloWorldService {

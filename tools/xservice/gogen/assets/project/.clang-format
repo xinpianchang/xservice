@@ -1,0 +1,12 @@
+# https://releases.llvm.org/11.0.1/tools/clang/docs/ClangFormatStyleOptions.html
+BasedOnStyle: LLVM
+
+
+---
+Language: Proto
+AlignConsecutiveAssignments: AcrossComments
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Empty
+AlignConsecutiveDeclarations: true
+ColumnLimit: 200
