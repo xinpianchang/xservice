@@ -4,9 +4,15 @@ BasedOnStyle: LLVM
 
 ---
 Language: Proto
+BasedOnStyle: Google
 AlignConsecutiveAssignments: AcrossComments
 AlignTrailingComments: true
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
 AlignConsecutiveDeclarations: true
 ColumnLimit: 200
