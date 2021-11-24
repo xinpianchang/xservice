@@ -46,7 +46,7 @@ go install github.com/bufbuild/buf/cmd/buf@latest
 
 ```bash
 cd pb && buf mod update buf && buf generate && cd ../
-go mod tidy && go mod download
+go mod tidy && go mod download && go generate
 ```
 
 ## Run
