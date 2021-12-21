@@ -96,7 +96,7 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 	ctx, cancel := context.WithTimeout(ctx, t.options.GrpcClientDialTimeout)
 	defer cancel()
 
-	if len(endpoint) > 0 {
+	if len(endpoint) > 0 && endpoint[0] != "" {
 		c, err := grpc.DialContext(ctx, endpoint[0], options...)
 		if err != nil {
 			return nil, err
@@ -136,7 +136,7 @@ func (t *clientImpl) grpcClientKey(service string, desc *grpc.ServiceDesc, endpo
 	var sb strings.Builder
 	_, _ = sb.WriteString(service)
 	_, _ = sb.WriteString(desc.ServiceName)
-	if endpoint != nil {
+	if endpoint != nil && endpoint[0] != "" {
 		_, _ = sb.WriteString(endpoint[0])
 	}
 	return sb.String()
