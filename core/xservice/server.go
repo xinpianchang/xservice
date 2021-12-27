@@ -151,7 +151,9 @@ func (t *serverImpl) Serve() error {
 	t.registerGrpcServiceEtcd()
 
 	signalx.AddShutdownHook(func(os.Signal) {
-		_ = server.Shutdown(context.Background())
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		_ = server.Shutdown(ctx)
 		t.grpc.GracefulStop()
 		sentry.Flush(time.Second * 2)
 		log.Info("shutdown", zap.Int("pid", os.Getpid()))
