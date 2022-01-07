@@ -101,15 +101,15 @@ var (
 
 // request hold request context / params / data
 type requests struct {
-	client  *http.Client
-	ctx     context.Context
-	method  string
-	headers map[string]string
-	uri     string
-	query   url.Values
-	form    url.Values
-	body    io.Reader
-	retry   RetryStrategy
+	client *http.Client
+	ctx    context.Context
+	method string
+	header http.Header
+	uri    string
+	query  url.Values
+	form   url.Values
+	body   io.Reader
+	retry  RetryStrategy
 }
 
 // Response hold response context & data with debug information
@@ -123,11 +123,11 @@ type Response struct {
 // New create new requests instance
 func New() Requests {
 	return &requests{
-		client:  defaultClient,
-		ctx:     context.Background(),
-		method:  http.MethodGet,
-		headers: make(map[string]string, 8),
-		uri:     "",
+		client: defaultClient,
+		ctx:    context.Background(),
+		method: http.MethodGet,
+		header: make(http.Header),
+		uri:    "",
 	}
 }
 
@@ -232,7 +232,7 @@ func (t *requests) RequestId(requestId string) Requests {
 
 // AddHeader add request header
 func (t *requests) AddHeader(key, value string) Requests {
-	t.headers[key] = value
+	t.header.Add(key, value)
 	return t
 }
 
@@ -266,6 +266,10 @@ func (t *requests) buildRequest() (*http.Request, error) {
 		return nil, err
 	}
 
+	if len(t.header) > 0 {
+		req.Header = t.header
+	}
+
 	if span := opentracing.SpanFromContext(t.ctx); span != nil {
 		carrier := opentracing.HTTPHeadersCarrier(req.Header)
 		_ = span.Tracer().Inject(span.Context(), opentracing.HTTPHeaders, carrier)
@@ -275,8 +279,8 @@ func (t *requests) buildRequest() (*http.Request, error) {
 		req.Header.Set("x-request-id", fmt.Sprint(requestId))
 	}
 
-	for k, v := range t.headers {
-		req.Header.Set(k, v)
+	if t.ctx != nil {
+		req = req.WithContext(t.ctx)
 	}
 
 	return req, nil
