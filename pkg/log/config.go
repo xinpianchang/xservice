@@ -60,6 +60,12 @@ func Config(v *viper.Viper) {
 		cfg.Format = "console"
 	}
 
+	if cfg.File != "" {
+		if strings.HasSuffix(os.Args[0], ".test") {
+			cfg.File = ""
+		}
+	}
+
 	if l, err := buildZapLogger(cfg); err != nil {
 		Fatal("config log", zap.Error(err))
 	} else {
