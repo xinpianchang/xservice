@@ -75,7 +75,6 @@ func Config(v *viper.Viper, configureFn ...ConfigureFn) {
 // MySQLDbConfig for mysql config
 func MySQLDbConfig(cfg DbConfig) *gorm.DB {
 	db, err := gorm.Open(mysql.Open(cfg.Uri), &gorm.Config{
-		PrepareStmt:     true,
 		QueryFields:     cfg.QueryFields,
 		CreateBatchSize: cfg.CreateBatchSize,
 		NamingStrategy: schema.NamingStrategy{
