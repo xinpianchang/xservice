@@ -5,7 +5,7 @@ BasedOnStyle: LLVM
 ---
 Language: Proto
 BasedOnStyle: Google
-AlignConsecutiveAssignments: AcrossComments
+AlignConsecutiveAssignments: true
 AlignTrailingComments: true
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: Empty
