@@ -34,3 +34,5 @@ __debug_bin
 go.sum
 
 !.gitkeep
+!.clang-format
+!.golangci.yml
