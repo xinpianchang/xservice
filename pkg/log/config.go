@@ -22,6 +22,7 @@ var (
 
 	loggerFileMap      map[string]*zap.Logger = make(map[string]*zap.Logger)
 	loggerFileMapMutex sync.Mutex
+	replaceGlobalsOnce sync.Once
 )
 
 // Cfg is the log config
@@ -72,6 +73,10 @@ func Config(v *viper.Viper) {
 		zaplogger = l
 	}
 
+	replaceGlobalsOnce.Do(func() {
+		_ = zap.ReplaceGlobals(zaplogger)
+	})
+
 	logger = newLogger(zaplogger)
 }
 
@@ -113,7 +118,7 @@ func buildZapLogger(cfg Cfg) (*zap.Logger, error) {
 
 	ws := make([]zapcore.WriteSyncer, 0, 2)
 
-	if cfg.Stdout && os.Getenv("XSERVICE_DISABLE_STDOUT") == "" {
+	if !isDisableStdout(cfg) {
 		ws = append(ws, zapcore.AddSync(os.Stdout))
 	}
 
@@ -183,4 +188,8 @@ func scheduleRotate(log *lumberjack.Logger) {
 		time.Sleep(d)
 		_ = log.Rotate()
 	}
+}
+
+func isDisableStdout(cfg Cfg) bool {
+	return os.Getenv("XSERVICE_DISABLE_STDOUT") != "" || !cfg.Stdout
 }
