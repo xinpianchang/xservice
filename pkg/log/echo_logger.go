@@ -7,6 +7,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
 
@@ -23,6 +24,8 @@ func NewEchoLogger() *EchoLogger {
 		logger: Named(""),
 	}
 }
+
+var _ echo.Logger = (*EchoLogger)(nil)
 
 // For with context.Context
 func (t *EchoLogger) For(ctx context.Context) *EchoLogger {
