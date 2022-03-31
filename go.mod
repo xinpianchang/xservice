@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/Shopify/sarama v1.32.0
 	github.com/bsm/redislock v0.7.2
-	github.com/cloudflare/tableflip v1.2.2
+	github.com/cloudflare/tableflip v1.2.3
 	github.com/dave/jennifer v1.5.0
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/go-playground/validator/v10 v10.10.1
