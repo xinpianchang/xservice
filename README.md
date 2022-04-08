@@ -24,6 +24,11 @@ Install toolset.
 go install github.com/xinpianchang/xservice/tools/xservice@latest
 ```
 
+```bash
+# smaller binary size commands with -ldflags="-s -w"
+go install -ldflags="-s -w" github.com/xinpianchang/xservice/tools/xservice
+```
+
 Create new project via toolset.
 
 ```bash
