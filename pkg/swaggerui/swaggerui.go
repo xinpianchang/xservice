@@ -21,7 +21,7 @@ var (
 )
 
 const (
-	base = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@4.8.1"
+	base = "https://unpkg.com/swagger-ui-dist@4.8.1"
 )
 
 // Serve create swaggerFS middleware for serve swagger UI
