@@ -8,7 +8,7 @@ require (
 	github.com/cloudflare/tableflip v1.2.3
 	github.com/dave/jennifer v1.5.0
 	github.com/getsentry/sentry-go v0.13.0
-	github.com/go-playground/validator/v10 v10.10.1
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/gops v0.3.22
