@@ -3,7 +3,7 @@ module github.com/xinpianchang/xservice
 go 1.16
 
 require (
-	github.com/Shopify/sarama v1.32.0
+	github.com/Shopify/sarama v1.33.0
 	github.com/bsm/redislock v0.7.2
 	github.com/cloudflare/tableflip v1.2.3
 	github.com/dave/jennifer v1.5.0
