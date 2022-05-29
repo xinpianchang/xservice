@@ -30,7 +30,7 @@ require (
 	github.com/soheilhy/cmux v0.1.5
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.4.0
-	github.com/spf13/viper v1.11.0
+	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.7.1
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible
