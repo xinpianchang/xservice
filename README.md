@@ -41,7 +41,7 @@ Open the generated `README.md` file, following the initialize steps and happing 
 
 ## Resource
 
-- go-zero https://github.com/tal-tech/go-zero (special thanks)
+- go-zero https://github.com/zeromicro/go-zero (inspired)
 - micro https://github.com/asim/go-micro (inspired)
 - GORM http://gorm.io/
 - Echo https://echo.labstack.com/
