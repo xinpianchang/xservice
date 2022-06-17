@@ -7,8 +7,8 @@ Robust service powered by `xservice`
 install protobuf & generator plugins
 
 ```bash
-# install protoc v3.17.3 (recommended)
-# https://github.com/protocolbuffers/protobuf/releases/tag/v3.17.3
+# install protoc (recommended)
+# https://github.com/protocolbuffers/protobuf/releases/tag/v21.1
 
 # or checkout latest
 # https://github.com/protocolbuffers/protobuf/releases
@@ -16,13 +16,13 @@ install protobuf & generator plugins
 
 ```bash
 # install specific version (recommended)
-go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.42.0
-go install github.com/envoyproxy/protoc-gen-validate@v0.6.2
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
+go install github.com/envoyproxy/protoc-gen-validate@v0.6.7
 
 go install \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.6.0 \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.6.0
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.10.3 \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.10.3
 
 
 
