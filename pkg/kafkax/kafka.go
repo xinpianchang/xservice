@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -20,6 +21,7 @@ import (
 
 var (
 	configMap = make(map[string]mqConfig, 8)
+	clientID  int32
 )
 
 type mqConfig struct {
@@ -77,7 +79,7 @@ func New(name string, cfg ...*sarama.Config) (Client, error) {
 		config = cfg[0]
 	}
 	if config == nil {
-		config = sarama.NewConfig()
+		config = NewDefaultKafkaConfig()
 	}
 
 	if version, err := sarama.ParseKafkaVersion(c.Version); err != nil {
@@ -86,18 +88,8 @@ func New(name string, cfg ...*sarama.Config) (Client, error) {
 		config.Version = version
 	}
 
-	hostname, _ := os.Hostname()
-	if hostname == "" {
-		hostname = netx.InternalIp()
-	}
-	config.ClientID = fmt.Sprint("sarama", "_", hostname, "_", os.Getpid())
-
-	config.Consumer.Return.Errors = true
-	config.Producer.Return.Successes = true
-
-	maxMessageBytes := 1024 * 1024 * 10
-	if config.Producer.MaxMessageBytes < maxMessageBytes {
-		config.Producer.MaxMessageBytes = maxMessageBytes
+	if config.ClientID == "" {
+		config.ClientID = kafkaClientID()
 	}
 
 	if client, err := sarama.NewClient(c.Broker, config); err != nil {
@@ -107,6 +99,31 @@ func New(name string, cfg ...*sarama.Config) (Client, error) {
 	}
 
 	return kafka, nil
+}
+
+func NewDefaultKafkaConfig() *sarama.Config {
+	config := sarama.NewConfig()
+	config.Consumer.Return.Errors = true
+	config.Producer.Return.Successes = true
+	config.Producer.Return.Errors = true
+
+	maxMessageBytes := 1024 * 1024 * 10
+	if config.Producer.MaxMessageBytes < maxMessageBytes {
+		config.Producer.MaxMessageBytes = maxMessageBytes
+	}
+
+	config.ClientID = kafkaClientID()
+
+	return config
+}
+
+func kafkaClientID() string {
+	atomic.AddInt32(&clientID, 1)
+	hostname, _ := os.Hostname()
+	if hostname == "" {
+		hostname = netx.InternalIp()
+	}
+	return fmt.Sprint("sarama", "_", hostname, "_", os.Getpid(), "_", clientID)
 }
 
 // Get get kafka client
