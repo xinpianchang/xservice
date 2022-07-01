@@ -20,7 +20,6 @@ require (
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/jarcoal/httpmock v1.2.0
 	github.com/jinzhu/copier v0.3.5
-	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/labstack/echo-contrib v0.12.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/labstack/gommon v0.3.1
@@ -52,7 +51,7 @@ require (
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.4.0
-	gorm.io/datatypes v1.0.6
+	gorm.io/datatypes v1.0.7
 	gorm.io/driver/mysql v1.3.4
 	gorm.io/gorm v1.23.6
 	gorm.io/plugin/opentracing v0.0.0-20211220013347-7d2b2af23560
