@@ -3,11 +3,10 @@ module github.com/xinpianchang/xservice
 go 1.16
 
 require (
-	github.com/Shopify/sarama v1.34.1
+	github.com/Shopify/sarama v1.35.0
 	github.com/bsm/redislock v0.7.2
 	github.com/cloudflare/tableflip v1.2.3
 	github.com/dave/jennifer v1.5.0
-	github.com/eapache/go-resiliency v1.3.0 // indirect
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis/v8 v8.11.5
@@ -25,7 +24,6 @@ require (
 	github.com/labstack/gommon v0.3.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
-	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.2
 	github.com/prometheus/common v0.35.0 // indirect
