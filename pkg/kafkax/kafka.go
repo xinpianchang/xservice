@@ -25,9 +25,9 @@ var (
 )
 
 type mqConfig struct {
-	Name    string   `yaml:"name"`
-	Version string   `yaml:"version"`
-	Broker  []string `yaml:"broker"`
+	Name    string   `yaml:"name"`    // config name, should be unique
+	Version string   `yaml:"version"` // kafka cluster version
+	Broker  []string `yaml:"broker"`  // kafka broker list
 }
 
 func Config(v *viper.Viper) {
