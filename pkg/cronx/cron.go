@@ -13,18 +13,18 @@ import (
 )
 
 const (
-	SpecManual              = "@manual" // specification for manual
-	SpecMonthly             = "@monthly"
-	SpecWeekly              = "@weekly"
-	SpecHourly              = "@hourly"
-	SpecDaily               = "@daily"
-	SpecMidnight            = "@midnight"
-	SpecEveryMinutes        = "@every 1m"
-	SpecEveryTenMinutes     = "@every 10m"
-	SpecEveryFifteenMinutes = "@every 15m"
-	SpecEveryThirtyMinutes  = "@every 30m"
-	SpecEverySeconds        = "@every 1s"
-	SpecEveryTenSeconds     = "@every 10s"
+	SpecManual              = "@manual"    // specification for manual
+	SpecMonthly             = "@monthly"   // spec monthly
+	SpecWeekly              = "@weekly"    // spec weekly
+	SpecHourly              = "@hourly"    // spec hourly
+	SpecDaily               = "@daily"     // spec daily
+	SpecMidnight            = "@midnight"  // spec at midnight
+	SpecEveryMinutes        = "@every 1m"  // spec every 1 minute
+	SpecEveryTenMinutes     = "@every 10m" // spec every 10 minutes
+	SpecEveryFifteenMinutes = "@every 15m" // spec every 15 minutes
+	SpecEveryThirtyMinutes  = "@every 30m" // spec every 30 minutes
+	SpecEverySeconds        = "@every 1s"  // spec every 1 second
+	SpecEveryTenSeconds     = "@every 10s" // spec every 10 seconds
 )
 
 var (
