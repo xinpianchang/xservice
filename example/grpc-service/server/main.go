@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/xinpianchang/xservice/core/xservice"
 	"github.com/xinpianchang/xservice/pkg/echox"
+	"github.com/xinpianchang/xservice/pkg/log"
 	"github.com/xinpianchang/xservice/pkg/swaggerui"
 
 	pb "grpc-service/buf/v1"
@@ -55,5 +55,6 @@ func (t *GreeterServer) SayHello(ctx context.Context, request *pb.SayHelloReques
 type CalculatorServer struct{}
 
 func (t *CalculatorServer) AddInt(ctx context.Context, request *pb.AddIntRequest) (*pb.AddIntResponse, error) {
+	log.Info("call addInt", zap.Any("request", request))
 	return &pb.AddIntResponse{Result: request.A + request.B}, nil
 }
