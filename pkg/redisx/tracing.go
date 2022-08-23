@@ -3,7 +3,7 @@ package redisx
 import (
 	"context"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v9"
 	"github.com/opentracing/opentracing-go"
 )
 

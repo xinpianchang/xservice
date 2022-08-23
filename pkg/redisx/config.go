@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/bsm/redislock"
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v9"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
@@ -71,14 +71,14 @@ func Config(v *viper.Viper) {
 		}
 
 		client := redis.NewClient(&redis.Options{
-			Addr:         c.Addr,
-			Password:     c.Password,
-			DB:           c.DB,
-			ReadTimeout:  time.Second * time.Duration(c.ReadTimeout),
-			MaxRetries:   c.MaxRetries,
-			MinIdleConns: c.MinIdleConns,
-			MaxConnAge:   time.Second * time.Duration(c.MaxConnAge),
-			PoolSize:     c.PoolSize,
+			Addr:            c.Addr,
+			Password:        c.Password,
+			DB:              c.DB,
+			ReadTimeout:     time.Second * time.Duration(c.ReadTimeout),
+			MaxRetries:      c.MaxRetries,
+			MinIdleConns:    c.MinIdleConns,
+			ConnMaxLifetime: time.Second * time.Duration(c.MaxConnAge),
+			PoolSize:        c.PoolSize,
 		})
 		r := client.Ping(context.TODO())
 		if err := r.Err(); err != nil {
