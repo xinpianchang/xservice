@@ -34,15 +34,15 @@ func Test_query_binder_query_param(t *testing.T) {
 		return c.JSON(http.StatusOK, foo)
 	}
 
-	e, rec, c := build()
+	_, rec, c := build()
 	err := handler(c)
 	require.NoError(t, err)
 	body := rec.Body.String()
 	assert.Contains(t, body, `"id":1`)
 	assert.Contains(t, body, `"name":""`)
 
-	e, rec, c = build()
-	UseDefaultQueryBinder(e)
+	ex, rec, c := build()
+	UseDefaultQueryBinder(ex)
 	err = handler(c)
 	require.NoError(t, err)
 	body = rec.Body.String()

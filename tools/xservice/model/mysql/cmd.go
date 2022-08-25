@@ -42,5 +42,5 @@ var (
 func init() {
 	pf := MySQLCmd.PersistentFlags()
 	pf.Bool("gormcomment", false, "enable gorm comment")
-	viper.BindPFlag("gormcomment", pf.Lookup("gormcomment"))
+	_ = viper.BindPFlag("gormcomment", pf.Lookup("gormcomment"))
 }
