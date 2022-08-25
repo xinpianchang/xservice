@@ -174,7 +174,7 @@ func buildZapLogger(cfg Cfg) (*zap.Logger, error) {
 	log := zap.New(core, options...)
 	if cfg.File != "" {
 		signalx.AddShutdownHook(func(os.Signal) {
-			log.Sync()
+			_ = log.Sync()
 		})
 	}
 	return log, nil

@@ -48,7 +48,9 @@ func load(v *viper.Viper) error {
 					name = core.DefaultServiceName
 				}
 				viper.RemoteConfig = &remoteConfig{}
-				v.AddRemoteProvider("etcd", endpoint, fmt.Sprint(core.ServiceConfigKeyPrefix, "/", name, ".yaml"))
+				if e := v.AddRemoteProvider("etcd", endpoint, fmt.Sprint(core.ServiceConfigKeyPrefix, "/", name, ".yaml")); e != nil {
+					return e
+				}
 				if err = v.ReadRemoteConfig(); err != nil {
 					return err
 				}

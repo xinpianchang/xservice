@@ -29,7 +29,7 @@ func Serve(prefix string, efs ...embed.FS) echo.MiddlewareFunc {
 
 	tp := template.Must(template.New("index").Parse(ui))
 	var index bytes.Buffer
-	tp.Execute(&index, map[string]interface{}{
+	_ = tp.Execute(&index, map[string]interface{}{
 		"base": base,
 	})
 
@@ -38,7 +38,7 @@ func Serve(prefix string, efs ...embed.FS) echo.MiddlewareFunc {
 	hs := make(map[int]http.Handler, len(efs))
 
 	for i, f := range efs {
-		fs.WalkDir(f, ".", func(src string, f fs.DirEntry, err error) error {
+		_ = fs.WalkDir(f, ".", func(src string, f fs.DirEntry, err error) error {
 			if f.IsDir() {
 				return nil
 			}
@@ -72,7 +72,7 @@ func Serve(prefix string, efs ...embed.FS) echo.MiddlewareFunc {
 			path := c.Request().URL.Path
 			switch strings.TrimPrefix(path, prefix) {
 			case "", "index.html":
-				tp.Execute(c.Response().Writer, map[string]interface{}{
+				_ = tp.Execute(c.Response().Writer, map[string]interface{}{
 					"base":  base,
 					"files": files,
 				})

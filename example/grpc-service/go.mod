@@ -4,13 +4,13 @@ go 1.19
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v0.6.7
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.2
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 	github.com/labstack/echo/v4 v4.8.0
 	github.com/stretchr/testify v1.8.0
 	github.com/xinpianchang/xservice v1.2.10
 	go.uber.org/zap v1.22.0
 	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc
-	google.golang.org/grpc v1.48.0
+	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
 

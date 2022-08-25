@@ -2,7 +2,7 @@ package generator
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 
@@ -24,7 +24,7 @@ var (
 )
 
 func generateStatusMap(file string) {
-	b, err := ioutil.ReadFile(file)
+	b, err := os.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +66,7 @@ func generateStatusMap(file string) {
 	)
 	fileabs, _ := filepath.Abs(file)
 	target := filepath.Join(filepath.Dir(fileabs), "d_status_map.go")
-	err = ioutil.WriteFile(target, []byte(f.GoString()), 0600)
+	err = os.WriteFile(target, []byte(f.GoString()), 0600)
 	if err != nil {
 		panic(err)
 	}

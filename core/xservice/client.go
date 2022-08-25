@@ -13,6 +13,7 @@ import (
 	resolver "go.etcd.io/etcd/client/v3/naming/resolver"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	gresolver "google.golang.org/grpc/resolver"
 
 	"github.com/xinpianchang/xservice/core"
@@ -77,7 +78,8 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 
 	options := make([]grpc.DialOption, 0, 8)
 	options = append(options,
-		grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
 		// refer: https://github.com/grpc/grpc-go/blob/master/examples/features/load_balancing/client/main.go#L76
 		grpc.WithDefaultServiceConfig(`{"loadBalancingConfig": [{"round_robin":{}}]}`),
 	)

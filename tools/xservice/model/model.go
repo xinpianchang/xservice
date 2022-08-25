@@ -24,8 +24,8 @@ func init() {
 	pf.StringP("filter", "f", "", "filter table via regex")
 	pf.String("dir", "internal/model", "generate go model files to dir")
 	pf.String("pkg", "model", "model package name")
-	viper.BindPFlag("datasource", pf.Lookup("datasource"))
-	viper.BindPFlag("filter", pf.Lookup("filter"))
-	viper.BindPFlag("dir", pf.Lookup("dir"))
-	viper.BindPFlag("pkg", pf.Lookup("pkg"))
+	_ = viper.BindPFlag("datasource", pf.Lookup("datasource"))
+	_ = viper.BindPFlag("filter", pf.Lookup("filter"))
+	_ = viper.BindPFlag("dir", pf.Lookup("dir"))
+	_ = viper.BindPFlag("pkg", pf.Lookup("pkg"))
 }

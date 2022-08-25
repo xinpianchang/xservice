@@ -3,7 +3,7 @@ package iox
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path"
 )
@@ -36,7 +36,7 @@ func CopyFile(src, dst string) error {
 
 func CopyDir(src string, dst string) error {
 	var err error
-	var fds []os.FileInfo
+	var fds []fs.DirEntry
 	var srcinfo os.FileInfo
 
 	if srcinfo, err = os.Stat(src); err != nil {
@@ -47,7 +47,7 @@ func CopyDir(src string, dst string) error {
 		return err
 	}
 
-	if fds, err = ioutil.ReadDir(src); err != nil {
+	if fds, err = os.ReadDir(src); err != nil {
 		return err
 	}
 	for _, fd := range fds {

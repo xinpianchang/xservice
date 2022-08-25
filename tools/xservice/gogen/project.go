@@ -116,8 +116,8 @@ func init() {
 	pf := NewCmd.PersistentFlags()
 	pf.StringP("target", "t", ".", "output directory")
 	pf.StringP("module", "m", "", "module name")
-	viper.BindPFlag("target", pf.Lookup("target"))
-	viper.BindPFlag("module", pf.Lookup("module"))
+	_ = viper.BindPFlag("target", pf.Lookup("target"))
+	_ = viper.BindPFlag("module", pf.Lookup("module"))
 }
 
 func newProject(module string) *Project {

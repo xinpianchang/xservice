@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -304,7 +303,7 @@ func (t *requests) Do() *Response {
 				if backoff > 0 {
 					// release, prepare for next call
 					if rsp != nil {
-						_, _ = ioutil.ReadAll(rsp.Body)
+						_, _ = io.ReadAll(rsp.Body)
 						_ = rsp.Body.Close()
 					}
 					time.Sleep(backoff)
@@ -367,7 +366,7 @@ func (t *Response) StatusCode() int {
 // Close release response
 func (t *Response) Close() {
 	if t.response != nil {
-		_, _ = io.Copy(ioutil.Discard, t.response.Body)
+		_, _ = io.Copy(io.Discard, t.response.Body)
 		_ = t.response.Body.Close()
 	}
 }
