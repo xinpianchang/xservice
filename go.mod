@@ -4,12 +4,12 @@ go 1.17
 
 require (
 	github.com/Shopify/sarama v1.37.0
-	github.com/bsm/redislock v0.8.0
+	github.com/bsm/redislock v0.8.1
 	github.com/cloudflare/tableflip v1.2.3
 	github.com/dave/jennifer v1.5.1
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/go-playground/validator/v10 v10.11.1
-	github.com/go-redis/redis/v9 v9.0.0-beta.2
+	github.com/go-redis/redis/v9 v9.0.0-beta.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/gops v0.3.25
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
