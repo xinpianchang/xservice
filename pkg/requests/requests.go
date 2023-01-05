@@ -114,6 +114,7 @@ type requests struct {
 
 // Response hold response context & data with debug information
 type Response struct {
+	request  *http.Request
 	err      error
 	escape   time.Duration
 	response *http.Response
@@ -297,6 +298,7 @@ func (t *requests) Do() *Response {
 			return r
 		}
 		r.cnt += 1
+		r.request = req
 		rsp, err := t.client.Do(req)
 		if err != nil {
 			if t.retry != nil {
@@ -341,8 +343,8 @@ func (t *Response) Dump(body bool) map[string]interface{} {
 		dump["error"] = t.err
 	}
 
-	if t.response != nil && t.response.Request != nil {
-		if b, err := httputil.DumpRequest(t.response.Request, body); err == nil {
+	if t.response != nil && t.request != nil {
+		if b, err := httputil.DumpRequestOut(t.request, body); err == nil {
 			dump["request"] = string(b)
 		}
 	}
