@@ -212,7 +212,7 @@ func (t *requests) Body(body io.Reader) Requests {
 
 // Data set body is raw bytes data
 func (t *requests) Data(data []byte) Requests {
-	return t.Body(bytes.NewReader(data))
+	return t.Body(bytes.NewBuffer(data))
 }
 
 // ContentType set content type
@@ -261,7 +261,7 @@ func (t *requests) buildRequest() (*http.Request, error) {
 		defer func() { t.body = &buf }()
 	}
 
-	req, err := http.NewRequest(t.method, uri, body)
+	req, err := http.NewRequestWithContext(t.ctx, t.method, uri, body)
 	if err != nil {
 		return nil, err
 	}
@@ -279,11 +279,22 @@ func (t *requests) buildRequest() (*http.Request, error) {
 		req.Header.Set("x-request-id", fmt.Sprint(requestId))
 	}
 
-	if t.ctx != nil {
-		req = req.WithContext(t.ctx)
-	}
-
 	return req, nil
+}
+
+func (t *requests) drainBody(b io.ReadCloser) (r1, r2 io.ReadCloser, err error) {
+	if b == nil || b == http.NoBody {
+		// No copying needed. Preserve the magic sentinel meaning of NoBody.
+		return http.NoBody, http.NoBody, nil
+	}
+	var buf bytes.Buffer
+	if _, err = buf.ReadFrom(b); err != nil {
+		return nil, b, err
+	}
+	if err = b.Close(); err != nil {
+		return nil, b, err
+	}
+	return io.NopCloser(&buf), io.NopCloser(bytes.NewReader(buf.Bytes())), nil
 }
 
 // Do requests
@@ -296,8 +307,12 @@ func (t *requests) Do() *Response {
 		if err != nil {
 			return r
 		}
+		var body io.ReadCloser
+		body, req.Body, err = t.drainBody(req.Body)
+		if err != nil {
+			r.err = err
+		}
 		r.cnt += 1
-		r.request = req
 		rsp, err := t.client.Do(req)
 		if err != nil {
 			if t.retry != nil {
@@ -314,11 +329,12 @@ func (t *requests) Do() *Response {
 			}
 		}
 
+		// copy back
+		req.Body = body
+		r.request = req
+
 		r.escape = time.Since(start)
 		r.response = rsp
-		if rsp != nil {
-			r.response.Request.Body = io.NopCloser(t.body)
-		}
 		r.err = err
 		if err != nil {
 			return r
@@ -342,7 +358,7 @@ func (t *Response) Dump(body bool) map[string]interface{} {
 		dump["error"] = t.err
 	}
 
-	if t.response != nil && t.request != nil {
+	if t.request != nil {
 		if b, err := httputil.DumpRequestOut(t.request, body); err == nil {
 			dump["request"] = string(b)
 		}
