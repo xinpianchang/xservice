@@ -7,7 +7,7 @@ require (
 	github.com/bsm/redislock v0.8.0
 	github.com/cloudflare/tableflip v1.2.3
 	github.com/dave/jennifer v1.5.1
-	github.com/getsentry/sentry-go v0.13.0
+	github.com/getsentry/sentry-go v0.18.0
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/go-redis/redis/v9 v9.0.0-beta.2
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -101,7 +101,7 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be // indirect
-	golang.org/x/net v0.0.0-20220927171203-f486391704dc // indirect
+	golang.org/x/net v0.0.0-20221002022538-bcab6841153b // indirect
 	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af // indirect
