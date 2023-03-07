@@ -5,10 +5,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/xinpianchang/xservice"
-	"github.com/xinpianchang/xservice/tools/xservice/generator"
-	"github.com/xinpianchang/xservice/tools/xservice/gogen"
-	"github.com/xinpianchang/xservice/tools/xservice/model"
+	"github.com/xinpianchang/xservice/v2"
+	"github.com/xinpianchang/xservice/v2/tools/xservice/generator"
+	"github.com/xinpianchang/xservice/v2/tools/xservice/gogen"
+	"github.com/xinpianchang/xservice/v2/tools/xservice/model"
 )
 
 var (
@@ -24,7 +24,7 @@ __  _____  ___ _ ____   ___  ___ ___
 Another excellent & extensible micro service framework
 
 xservice toolset more documentation refer
- https://github.com/xinpianchang/xservice
+ https://github.com/xinpianchang/xservice/v2
 
 `
 

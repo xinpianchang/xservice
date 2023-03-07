@@ -57,7 +57,7 @@ go run cmd/main.go
 
 ## Resource
 
-- xservice https://github.com/xinpianchang/xservice
+- xservice https://github.com/xinpianchang/xservice/v2
 - GORM https://gorm.io/docs/ & https://github.com/go-gorm/gorm
 - Echo https://echo.labstack.com/
 - validator https://github.com/go-playground/validator

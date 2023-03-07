@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 
-	"github.com/xinpianchang/xservice/pkg/signalx"
+	"github.com/xinpianchang/xservice/v2/pkg/signalx"
 )
 
 var (

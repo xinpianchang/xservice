@@ -1,7 +1,7 @@
 package gosafe
 
 import (
-	"github.com/xinpianchang/xservice/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
 	"go.uber.org/zap"
 )
 

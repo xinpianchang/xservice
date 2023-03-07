@@ -53,7 +53,7 @@ func generateStatusMap(file string) {
 
 		name := fmt.Sprint("StatusCode", codeN)
 		if i == 0 {
-			consts = append(consts, jen.Id(name).Qual("github.com/xinpianchang/xservice/pkg/responsex", "StatusCode").Op("=").Lit(code))
+			consts = append(consts, jen.Id(name).Qual("github.com/xinpianchang/xservice/v2/pkg/responsex", "StatusCode").Op("=").Lit(code))
 		} else {
 			consts = append(consts, jen.Id(name).Op("=").Lit(code).Comment(statusMap[code]))
 		}

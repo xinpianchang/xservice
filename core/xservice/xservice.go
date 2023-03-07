@@ -9,12 +9,12 @@ import (
 	"github.com/google/gops/agent"
 	"go.uber.org/zap"
 
-	"github.com/xinpianchang/xservice/core"
-	"github.com/xinpianchang/xservice/pkg/gormx"
-	"github.com/xinpianchang/xservice/pkg/kafkax"
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/redisx"
-	"github.com/xinpianchang/xservice/pkg/tracingx"
+	"github.com/xinpianchang/xservice/v2/core"
+	"github.com/xinpianchang/xservice/v2/pkg/gormx"
+	"github.com/xinpianchang/xservice/v2/pkg/kafkax"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/redisx"
+	"github.com/xinpianchang/xservice/v2/pkg/tracingx"
 )
 
 // Service is a service interface, core api for xservice

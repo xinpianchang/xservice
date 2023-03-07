@@ -3,8 +3,7 @@ package log
 import (
 	"context"
 
-	"github.com/opentracing/opentracing-go"
-	"github.com/uber/jaeger-client-go"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -32,7 +31,7 @@ type Logger interface {
 	// With add zap fields
 	With(fields ...zapcore.Field) Logger
 
-	// For log with context.Context, which will log trace_id and span_id if opentracing enabled
+	// For log with context.Context, which will log trace_id and span_id if tracing enabled
 	For(ctx context.Context) Logger
 
 	// CallerSkip skip caller for adjust caller
@@ -94,21 +93,19 @@ func (t defaultLogger) With(fields ...zapcore.Field) Logger {
 	}
 }
 
-// For log with context.Context, which will log trace_id and span_id if opentracing enabled
+// For log with context.Context, which will log trace_id and span_id if tracing enabled
 func (t defaultLogger) For(ctx context.Context) Logger {
 	if ctx == nil {
 		ctx = context.Background()
 	}
 
-	if span := opentracing.SpanFromContext(ctx); span != nil {
+	if span := trace.SpanFromContext(ctx); span != nil {
 		l := spanLogger{span: span, logger: t.logger.WithOptions(zap.AddCallerSkip(t.skip())), additionalFields: t.additionalFields}
 
-		if jaegerCtx, ok := span.Context().(jaeger.SpanContext); ok {
-			l.logger = l.logger.With(
-				zap.String("trace_id", jaegerCtx.TraceID().String()),
-				zap.String("span_id", jaegerCtx.SpanID().String()),
-			)
-		}
+		l.logger = l.logger.With(
+			zap.String("trace_id", span.SpanContext().TraceID().String()),
+			zap.String("span_id", span.SpanContext().SpanID().String()),
+		)
 
 		return l
 	}

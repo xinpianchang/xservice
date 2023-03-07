@@ -42,7 +42,7 @@ func With(fields ...zap.Field) Logger {
 	return logger.With(fields...)
 }
 
-// For log with context.Context, which will log trace_id and span_id if opentracing enabled
+// For log with context.Context, which will log trace_id and span_id if tracing enabled
 func For(ctx context.Context) Logger {
 	return logger.For(ctx)
 }

@@ -13,9 +13,9 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/responsex"
-	"github.com/xinpianchang/xservice/pkg/tracingx"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/responsex"
+	"github.com/xinpianchang/xservice/v2/pkg/tracingx"
 )
 
 func HTTPErrorHandler(err error, c echo.Context) {

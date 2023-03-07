@@ -16,17 +16,18 @@ import (
 	sentryecho "github.com/getsentry/sentry-go/echo"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	gwrt "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/labstack/echo/v4"
 	echomd "github.com/labstack/echo/v4/middleware"
-	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/soheilhy/cmux"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/naming/endpoints"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -36,13 +37,13 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	"github.com/xinpianchang/xservice/core"
-	"github.com/xinpianchang/xservice/core/middleware"
-	"github.com/xinpianchang/xservice/pkg/echox"
-	"github.com/xinpianchang/xservice/pkg/grpcx"
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/signalx"
-	"github.com/xinpianchang/xservice/pkg/tracingx"
+	"github.com/xinpianchang/xservice/v2/core"
+	"github.com/xinpianchang/xservice/v2/core/middleware"
+	"github.com/xinpianchang/xservice/v2/pkg/echox"
+	"github.com/xinpianchang/xservice/v2/pkg/grpcx"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/signalx"
+	"github.com/xinpianchang/xservice/v2/pkg/tracingx"
 )
 
 // Server is the interface for xservice server
@@ -227,13 +228,13 @@ func (t *serverImpl) initGrpc() {
 	options = append(options,
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_recovery.StreamServerInterceptor(grpc_recovery.WithRecoveryHandlerContext(recoveryHandler)),
-			grpc_opentracing.StreamServerInterceptor(),
+			otelgrpc.StreamServerInterceptor(),
 			grpc_prometheus.StreamServerInterceptor,
 			grpcx.EnvoyproxyValidatorStreamServerInterceptor(),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandlerContext(recoveryHandler)),
-			grpc_opentracing.UnaryServerInterceptor(),
+			otelgrpc.UnaryServerInterceptor(),
 			grpc_prometheus.UnaryServerInterceptor,
 			grpcx.EnvoyproxyValidatorUnaryServerInterceptor(),
 		)),
@@ -294,7 +295,7 @@ func (t *serverImpl) newEcho(subsystem string) *echo.Echo {
 
 	e.Use(echomd.RequestID())
 	e.Use(sentryecho.New(sentryecho.Options{Repanic: true}))
-	e.Use(middleware.Trace(t.options.Config.GetBool("jaeger.body_dump"), t.options.EchoTracingSkipper))
+	e.Use(middleware.Trace(t.options.EchoTracingSkipper))
 
 	// logger id & traceId & server-info
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -317,9 +318,11 @@ func (t *serverImpl) newEcho(subsystem string) *echo.Echo {
 				c.Response().Header().Set("X-Trace-Id", traceId)
 			}
 
-			if span := opentracing.SpanFromContext(c.Request().Context()); span != nil {
-				span.SetTag("requestId", requestId)
-				span.SetTag("ip", c.RealIP())
+			if span := trace.SpanFromContext(c.Request().Context()); span != nil {
+				span.SetAttributes(
+					attribute.String("requestId", requestId),
+					attribute.String("ip", c.RealIP()),
+				)
 			}
 
 			if hub := sentryecho.GetHubFromContext(c); hub != nil {
@@ -355,11 +358,11 @@ func (t *serverImpl) serveGrpc(ln net.Listener) {
 		address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
-			grpc_opentracing.StreamClientInterceptor(),
+			otelgrpc.StreamClientInterceptor(),
 			grpc_prometheus.StreamClientInterceptor,
 		)),
 		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
-			grpc_opentracing.UnaryClientInterceptor(),
+			otelgrpc.UnaryClientInterceptor(),
 			grpc_prometheus.UnaryClientInterceptor,
 		)),
 	)

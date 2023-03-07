@@ -9,14 +9,14 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/netx"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/netx"
 )
 
 var (
@@ -145,15 +145,15 @@ func (t *defaultKafka) SendMessage(ctx context.Context, message *sarama.Producer
 		return err
 	}
 
-	if span := opentracing.SpanFromContext(ctx); span != nil {
-		ctx = opentracing.ContextWithSpan(context.Background(), span)
-		span, _ = opentracing.StartSpanFromContext(ctx, "kafka_send")
+	if span := trace.SpanFromContext(ctx); span != nil {
+		span.AddEvent(fmt.Sprint("kafka_send name:", t.config.Name))
+
 		defer func() {
 			if err != nil {
-				ext.Error.Set(span, true)
-				span.LogKV("client_name", t.config.Name, "err", err)
+				span.SetStatus(codes.Error, err.Error())
+				span.RecordError(err)
 			}
-			span.Finish()
+			span.End()
 		}()
 	}
 

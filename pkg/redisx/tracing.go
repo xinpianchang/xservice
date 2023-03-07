@@ -3,44 +3,45 @@ package redisx
 import (
 	"context"
 
-	"github.com/go-redis/redis/v9"
-	"github.com/opentracing/opentracing-go"
+	"github.com/redis/go-redis/v9"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type redisTracing struct{}
 
-func (redisTracing) BeforeProcess(ctx context.Context, cmd redis.Cmder) (context.Context, error) {
-	if span := opentracing.SpanFromContext(ctx); span == nil {
-		return ctx, nil
-	}
-	span, ctx := opentracing.StartSpanFromContext(ctx, cmd.FullName())
-	span.SetTag("db.system", "redis")
-	span.SetTag("db.statement", cmd.String())
+var tracer = otel.Tracer("redisx")
 
-	return ctx, nil
+// DialHook implements redis.Hook
+func (t *redisTracing) DialHook(next redis.DialHook) redis.DialHook {
+	return next
 }
 
-func (redisTracing) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
-	if span := opentracing.SpanFromContext(ctx); span != nil {
-		span.Finish()
+// ProcessHook implements redis.Hook
+func (*redisTracing) ProcessHook(next redis.ProcessHook) redis.ProcessHook {
+	return func(ctx context.Context, cmd redis.Cmder) error {
+		if span := trace.SpanFromContext(ctx); span == nil {
+			ctx, span = tracer.Start(ctx, cmd.FullName())
+			span.SetAttributes(attribute.String("db.system", "redis"))
+			span.SetAttributes(attribute.String("db.statement", cmd.String()))
+			defer span.End()
+		}
+		return next(ctx, cmd)
 	}
-	return nil
 }
 
-func (redisTracing) BeforeProcessPipeline(ctx context.Context, cmds []redis.Cmder) (context.Context, error) {
-	if span := opentracing.SpanFromContext(ctx); span == nil {
-		return ctx, nil
+// ProcessPipelineHook implements redis.Hook
+func (*redisTracing) ProcessPipelineHook(next redis.ProcessPipelineHook) redis.ProcessPipelineHook {
+	return func(ctx context.Context, cmds []redis.Cmder) error {
+		if span := trace.SpanFromContext(ctx); span == nil {
+			ctx, span = tracer.Start(ctx, "pipline")
+			span.SetAttributes(attribute.String("db.system", "redis"))
+			span.SetAttributes(attribute.Int("db.cmd_count", len(cmds)))
+			defer span.End()
+		}
+		return next(ctx, cmds)
 	}
-	span, ctx := opentracing.StartSpanFromContext(ctx, "pipline")
-	span.SetTag("db.system", "redis")
-	span.SetTag("db.cmd_count", len(cmds))
-
-	return ctx, nil
 }
 
-func (t redisTracing) AfterProcessPipeline(ctx context.Context, cmds []redis.Cmder) error {
-	if span := opentracing.SpanFromContext(ctx); span != nil {
-		span.Finish()
-	}
-	return nil
-}
+var _ redis.Hook = (*redisTracing)(nil)

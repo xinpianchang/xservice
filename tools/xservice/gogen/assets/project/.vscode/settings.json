@@ -12,7 +12,6 @@
     "gogen",
     "gops",
     "gorm",
-    "gormopentracing",
     "gormx",
     "grpc",
     "grpcx",

@@ -7,8 +7,8 @@ import (
 	"runtime"
 
 	"github.com/labstack/echo/v4"
-	"github.com/xinpianchang/xservice/core/xservice"
-	"github.com/xinpianchang/xservice/pkg/swaggerui"
+	"github.com/xinpianchang/xservice/v2/core/xservice"
+	"github.com/xinpianchang/xservice/v2/pkg/swaggerui"
 
 	gen "{{.Module}}_pb/gen"
 	v1 "{{.Module}}_pb/gen/v1"

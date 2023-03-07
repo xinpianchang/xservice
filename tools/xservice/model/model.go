@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/xinpianchang/xservice/tools/xservice/model/mysql"
+	"github.com/xinpianchang/xservice/v2/tools/xservice/model/mysql"
 )
 
 var (

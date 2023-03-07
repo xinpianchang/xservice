@@ -12,8 +12,8 @@ import (
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 
-	"github.com/xinpianchang/xservice/core"
-	"github.com/xinpianchang/xservice/pkg/log"
+	"github.com/xinpianchang/xservice/v2/core"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
 )
 
 // serviceKey get full service key

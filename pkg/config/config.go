@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/xinpianchang/xservice/core"
+	"github.com/xinpianchang/xservice/v2/core"
 )
 
 func Load() (*viper.Viper, error) {
@@ -34,6 +34,8 @@ func load(v *viper.Viper) error {
 	v.AddConfigPath(".")
 	v.AddConfigPath("../")
 	v.AddConfigPath("../../")
+	v.AddConfigPath("../../../")
+	v.AddConfigPath("../../../../")
 
 	if _, file, _, ok := runtime.Caller(0); ok {
 		v.AddConfigPath(filepath.Join(filepath.Dir(file), "../../"))

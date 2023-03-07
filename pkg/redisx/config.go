@@ -10,12 +10,12 @@ import (
 	"time"
 
 	"github.com/bsm/redislock"
-	"github.com/go-redis/redis/v9"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/signalx"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/signalx"
 )
 
 var (

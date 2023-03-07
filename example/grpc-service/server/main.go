@@ -8,10 +8,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 
-	"github.com/xinpianchang/xservice/core/xservice"
-	"github.com/xinpianchang/xservice/pkg/echox"
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/swaggerui"
+	"github.com/xinpianchang/xservice/v2/core/xservice"
+	"github.com/xinpianchang/xservice/v2/pkg/echox"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/swaggerui"
 
 	pb "grpc-service/buf/v1"
 )

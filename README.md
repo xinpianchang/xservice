@@ -21,12 +21,12 @@ Another excellent micro service framework
 Install toolset.
 
 ```bash
-go install github.com/xinpianchang/xservice/tools/xservice@latest
+go install github.com/xinpianchang/xservice/v2/tools/xservice@latest
 ```
 
 ```bash
 # smaller binary size commands with -ldflags="-s -w"
-go install -ldflags="-s -w" github.com/xinpianchang/xservice/tools/xservice
+go install -ldflags="-s -w" github.com/xinpianchang/xservice/v2/tools/xservice
 ```
 
 Create new project via toolset.

@@ -14,8 +14,8 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/tools/xservice/gogen/assets"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/tools/xservice/gogen/assets"
 )
 
 var (

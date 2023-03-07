@@ -5,14 +5,13 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
 	"go.uber.org/zap"
 	_ "gorm.io/datatypes"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	gormopentracing "gorm.io/plugin/opentracing"
-
-	"github.com/xinpianchang/xservice/pkg/log"
+	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 var (
@@ -65,8 +64,8 @@ func Config(v *viper.Viper, configureFn ...ConfigureFn) {
 		if db == nil {
 			continue
 		}
-		if err := db.Use(gormopentracing.New()); err != nil {
-			log.Error("apply db opentracing", zap.Error(err))
+		if err := db.Use(tracing.NewPlugin()); err != nil {
+			log.Error("apply db tracing", zap.Error(err))
 		}
 		dbs[c.Name] = db
 	}

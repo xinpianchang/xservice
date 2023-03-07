@@ -1,78 +1,71 @@
 package tracingx
 
 import (
-	"fmt"
+	"context"
 	"os"
-	"strings"
+	"time"
 
-	"github.com/opentracing/opentracing-go"
 	"github.com/spf13/viper"
-	"github.com/uber/jaeger-client-go/config"
-	"github.com/uber/jaeger-client-go/rpcmetrics"
-	"github.com/uber/jaeger-lib/metrics"
-	"github.com/uber/jaeger-lib/metrics/prometheus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	"go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/xinpianchang/xservice/core"
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/signalx"
+	"github.com/xinpianchang/xservice/v2/core"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/signalx"
 )
 
 // Config config tracing
-//  currently only works with jaeger
 func Config(v *viper.Viper) {
 	serviceName := os.Getenv(core.EnvServiceName)
 
-	for k, v := range v.GetStringMapString("jaeger") {
-		os.Setenv(fmt.Sprintf("JAEGER_%s", strings.ToUpper(k)), v)
+	if !v.IsSet("tracing") {
+		return
 	}
 
-	os.Setenv("JAEGER_SERVICE_NAME", serviceName)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-	cfg, err := config.FromEnv()
+	res, err := resource.New(ctx, resource.WithAttributes(
+		semconv.ServiceName(serviceName),
+	))
+
 	if err != nil {
-		panic(err)
+		log.Fatal("create tracing resource", zap.Error(err))
 	}
 
-	if cfg.Sampler.Type == "" {
-		cfg.Sampler.Type = "const"
-	}
-	if cfg.Sampler.Param == 0 {
-		cfg.Sampler.Param = 1
-	}
-
-	metricsFactory := prometheus.New().
-		Namespace(metrics.NSOptions{
-			Name: "tracing",
-		})
-
-	tracer, closer, err := cfg.NewTracer(
-		config.Logger(&jaegerLoggerAdapter{}),
-		config.Metrics(metricsFactory),
-		config.Observer(rpcmetrics.NewObserver(metricsFactory, rpcmetrics.DefaultNameNormalizer)),
+	conn, err := grpc.DialContext(ctx, v.GetString("tracing.endpoint"),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 
 	if err != nil {
-		log.Fatal("create tracer", zap.Error(err))
+		log.Fatal("init tracing", zap.Error(err))
 	}
 
-	signalx.AddShutdownHook(func(os.Signal) {
-		_ = closer.Close()
+	exporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+	if err != nil {
+		log.Fatal("create tracing exporter", zap.Error(err))
+	}
+
+	bsp := trace.NewBatchSpanProcessor(exporter)
+	provider := trace.NewTracerProvider(
+		trace.WithSampler(trace.AlwaysSample()),
+		trace.WithResource(res),
+		trace.WithSpanProcessor(bsp),
+	)
+
+	otel.SetTracerProvider(provider)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+
+	signalx.AddShutdownHook(func(s os.Signal) {
+		if err := provider.Shutdown(context.Background()); err != nil {
+			log.Error("shutdown tracing", zap.Error(err))
+		}
 	})
-
-	opentracing.SetGlobalTracer(tracer)
-}
-
-type jaegerLoggerAdapter struct{}
-
-func (l jaegerLoggerAdapter) Error(msg string) {
-	log.Error(msg)
-}
-
-func (l jaegerLoggerAdapter) Infof(msg string, args ...interface{}) {
-	// no-op
-}
-
-func (l jaegerLoggerAdapter) Debugf(msg string, args ...interface{}) {
-	// no-op
 }

@@ -14,10 +14,10 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"github.com/xinpianchang/xservice/core"
-	"github.com/xinpianchang/xservice/pkg/config"
-	"github.com/xinpianchang/xservice/pkg/gormx"
-	"github.com/xinpianchang/xservice/pkg/netx"
+	"github.com/xinpianchang/xservice/v2/core"
+	"github.com/xinpianchang/xservice/v2/pkg/config"
+	"github.com/xinpianchang/xservice/v2/pkg/gormx"
+	"github.com/xinpianchang/xservice/v2/pkg/netx"
 )
 
 // Options for xservice core option

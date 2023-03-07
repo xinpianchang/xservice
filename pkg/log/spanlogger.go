@@ -6,15 +6,15 @@ import (
 	"math"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/log"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 type spanLogger struct {
 	logger           *zap.Logger
-	span             opentracing.Span
+	span             trace.Span
 	additionalFields []zapcore.Field
 }
 
@@ -62,7 +62,7 @@ func (t spanLogger) With(fields ...zapcore.Field) Logger {
 	}
 }
 
-// For log with context.Context, which will log trace_id and span_id if opentracing enabled
+// For log with context.Context, which will log trace_id and span_id if tracing enabled
 func (t spanLogger) For(context.Context) Logger {
 	return t
 }
@@ -74,45 +74,45 @@ func (t spanLogger) CallerSkip(skip int) Logger {
 }
 
 func (t spanLogger) logToSpan(level string, msg string, fields ...zapcore.Field) {
-	fs := make([]log.Field, 0, 2+len(fields))
-	fs = append(fs, log.String("msg", msg))
-	fs = append(fs, log.String("level", level))
+	fs := make([]attribute.KeyValue, 0, 2+len(fields))
+	fs = append(fs, attribute.String("msg", msg))
+	fs = append(fs, attribute.String("level", level))
 	for _, field := range fields {
-		fs = append(fs, zapFieldToLogField(field))
+		fs = append(fs, zapFieldToKv(field))
 	}
-	t.span.LogFields(fs...)
+	t.span.SetAttributes(fs...)
 }
 
-// zapFieldToLogField to opentracing log field
-func zapFieldToLogField(field zapcore.Field) log.Field {
+// zapFieldToKv to tracing attribute
+func zapFieldToKv(field zapcore.Field) attribute.KeyValue {
 	switch field.Type {
 	case zapcore.BoolType:
 		val := false
 		if field.Integer >= 1 {
 			val = true
 		}
-		return log.Bool(field.Key, val)
+		return attribute.Bool(field.Key, val)
 	case zapcore.Float32Type:
-		return log.Float32(field.Key, math.Float32frombits(uint32(field.Integer)))
+		return attribute.Float64(field.Key, float64(math.Float32frombits(uint32(field.Integer))))
 	case zapcore.Float64Type:
-		return log.Float64(field.Key, math.Float64frombits(uint64(field.Integer)))
+		return attribute.Float64(field.Key, math.Float64frombits(uint64(field.Integer)))
 	case zapcore.Int64Type:
-		return log.Int64(field.Key, int64(field.Integer))
+		return attribute.Int64(field.Key, int64(field.Integer))
 	case zapcore.Int32Type:
-		return log.Int32(field.Key, int32(field.Integer))
+		return attribute.Int64(field.Key, int64(field.Integer))
 	case zapcore.StringType:
-		return log.String(field.Key, field.String)
+		return attribute.String(field.Key, field.String)
 	case zapcore.StringerType:
-		return log.String(field.Key, field.Interface.(fmt.Stringer).String())
+		return attribute.String(field.Key, field.Interface.(fmt.Stringer).String())
 	case zapcore.Uint64Type:
-		return log.Uint64(field.Key, uint64(field.Integer))
+		return attribute.String(field.Key, fmt.Sprint(field.Integer))
 	case zapcore.Uint32Type:
-		return log.Uint32(field.Key, uint32(field.Integer))
+		return attribute.String(field.Key, fmt.Sprint(field.Integer))
 	case zapcore.DurationType:
-		return log.String(field.Key, time.Duration(field.Integer).String())
+		return attribute.String(field.Key, time.Duration(field.Integer).String())
 	case zapcore.ErrorType:
-		return log.Error(field.Interface.(error))
+		return attribute.String("err", (field.Interface.(error)).Error())
 	default:
-		return log.Object(field.Key, field.Interface)
+		return attribute.String(field.Key, fmt.Sprint(field.Interface))
 	}
 }

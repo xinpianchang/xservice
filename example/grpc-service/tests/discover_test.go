@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/xinpianchang/xservice/core/xservice"
+	"github.com/xinpianchang/xservice/v2/core/xservice"
 
 	pb "grpc-service/buf/v1"
 )

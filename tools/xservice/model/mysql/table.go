@@ -10,7 +10,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	"github.com/xinpianchang/xservice/pkg/stringx"
+	"github.com/xinpianchang/xservice/v2/pkg/stringx"
 )
 
 type (
@@ -440,7 +440,7 @@ func (t *MySQLGenerator) tableDefaultModel(table *Table) *jen.Statement {
 		jen.Id("var v int64"),
 		jen.Id("err := t.tx.Count(&v).Error"),
 		jen.If(jen.Id("err != nil")).Block(
-			jen.Qual("github.com/xinpianchang/xservice/pkg/log", "For").Id("(ctx).Error").Call(jen.Lit("count"), jen.Qual("go.uber.org/zap", "Error").Call(jen.Id("err"))),
+			jen.Qual("github.com/xinpianchang/xservice/v2/pkg/log", "For").Id("(ctx).Error").Call(jen.Lit("count"), jen.Qual("go.uber.org/zap", "Error").Call(jen.Id("err"))),
 		),
 		jen.Return(jen.Id("v")),
 	).Line()

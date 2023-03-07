@@ -8,17 +8,17 @@ import (
 	"sync"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	resolver "go.etcd.io/etcd/client/v3/naming/resolver"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	gresolver "google.golang.org/grpc/resolver"
 
-	"github.com/xinpianchang/xservice/core"
-	"github.com/xinpianchang/xservice/pkg/log"
-	"github.com/xinpianchang/xservice/pkg/signalx"
+	"github.com/xinpianchang/xservice/v2/core"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/signalx"
 )
 
 // Client is the client for xservice
@@ -85,11 +85,11 @@ func (t *clientImpl) GrpcClientConn(ctx context.Context, service string, desc *g
 	)
 	options = append(options,
 		grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
-			grpc_opentracing.StreamClientInterceptor(),
+			otelgrpc.StreamClientInterceptor(),
 			grpc_prometheus.StreamClientInterceptor,
 		)),
 		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
-			grpc_opentracing.UnaryClientInterceptor(),
+			otelgrpc.UnaryClientInterceptor(),
 			grpc_prometheus.UnaryClientInterceptor,
 		)),
 	)

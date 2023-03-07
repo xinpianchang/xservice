@@ -1,17 +1,21 @@
 package middleware
 
 import (
-	"github.com/labstack/echo-contrib/jaegertracing"
+	"os"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/opentracing/opentracing-go"
+	"github.com/xinpianchang/xservice/v2/core"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
+	"go.opentelemetry.io/otel"
 )
 
-// Trace is opentracing middleware
-func Trace(bodyDump bool, skipper middleware.Skipper) echo.MiddlewareFunc {
-	return jaegertracing.TraceWithConfig(jaegertracing.TraceConfig{
-		Tracer:     opentracing.GlobalTracer(),
-		Skipper:    skipper,
-		IsBodyDump: bodyDump,
-	})
+// Trace is opentelemetry middleware
+func Trace(skipper middleware.Skipper) echo.MiddlewareFunc {
+	serviceName := os.Getenv(core.EnvServiceName)
+	return otelecho.Middleware(
+		serviceName,
+		otelecho.WithPropagators(otel.GetTextMapPropagator()),
+		otelecho.WithSkipper(skipper),
+	)
 }

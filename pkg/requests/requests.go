@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 const (
@@ -90,11 +90,13 @@ var (
 	// defaultClient default http client with some optimize connection configuration
 	defaultClient = &http.Client{
 		Timeout: time.Second * 5,
-		Transport: &http.Transport{
-			MaxIdleConns:        100,
-			MaxIdleConnsPerHost: 100,
-			IdleConnTimeout:     time.Second * 10,
-		},
+		Transport: otelhttp.NewTransport(
+			&http.Transport{
+				MaxIdleConns:        100,
+				MaxIdleConnsPerHost: 100,
+				IdleConnTimeout:     time.Second * 10,
+			},
+		),
 	}
 )
 
@@ -133,7 +135,9 @@ func New() Requests {
 
 // WithClient replace default http client
 func (t *requests) WithClient(client *http.Client) Requests {
-	t.client = client
+	c := *client
+	c.Transport = otelhttp.NewTransport(c.Transport)
+	t.client = &c
 	return t
 }
 
@@ -268,11 +272,6 @@ func (t *requests) buildRequest() (*http.Request, error) {
 
 	if len(t.header) > 0 {
 		req.Header = t.header
-	}
-
-	if span := opentracing.SpanFromContext(t.ctx); span != nil {
-		carrier := opentracing.HTTPHeadersCarrier(req.Header)
-		_ = span.Tracer().Inject(span.Context(), opentracing.HTTPHeaders, carrier)
 	}
 
 	if requestId := t.ctx.Value(HeaderXRequestID); requestId != nil {

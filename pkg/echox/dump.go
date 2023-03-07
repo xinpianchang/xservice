@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 
-	"github.com/xinpianchang/xservice/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
 )
 
 type bodyDumpResponseWriter struct {

@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"github.com/xinpianchang/xservice/pkg/log"
+	"github.com/xinpianchang/xservice/v2/pkg/log"
 )
 
 type dbLogger struct {

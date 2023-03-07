@@ -3,16 +3,14 @@ package tracingx
 import (
 	"context"
 
-	"github.com/opentracing/opentracing-go"
-	"github.com/uber/jaeger-client-go"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func GetTraceID(ctx context.Context) string {
-	if span := opentracing.SpanFromContext(ctx); span != nil {
-		if sc, ok := span.Context().(jaeger.SpanContext); ok {
-			return sc.TraceID().String()
+	if span := trace.SpanFromContext(ctx); span != nil {
+		if span.SpanContext().HasTraceID() {
+			return span.SpanContext().TraceID().String()
 		}
 	}
-
 	return ""
 }
