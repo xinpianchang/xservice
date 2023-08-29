@@ -27,6 +27,7 @@ var (
 type redisConfig struct {
 	Name         string `yaml:"name"`
 	Addr         string `yaml:"addr"`
+	Username     string `yaml:"username"`
 	Password     string `yaml:"password"`
 	ReadTimeout  int    `yaml:"readTimeout"`
 	DB           int    `yaml:"db"`
@@ -72,6 +73,7 @@ func Config(v *viper.Viper) {
 
 		client := redis.NewClient(&redis.Options{
 			Addr:            c.Addr,
+			Username:        c.Username,
 			Password:        c.Password,
 			DB:              c.DB,
 			ReadTimeout:     time.Second * time.Duration(c.ReadTimeout),
